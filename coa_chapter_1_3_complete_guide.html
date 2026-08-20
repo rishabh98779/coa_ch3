@@ -1,0 +1,2058 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Computer Organization &amp; Architecture — Chapter 1.3: Instruction Sets, Addressing Modes &amp; the Instruction Cycle</title>
+<style>
+:root{
+  --navy:#1b2a4a; --navy2:#16233f; --accent:#2563eb; --accent2:#0ea5e9;
+  --bg:#f4f6f9; --card:#ffffff; --ink:#1f2937; --muted:#5b6472;
+  --green:#0f766e; --greenbg:#ecfdf5; --blue:#1d4ed8; --bluebg:#eff6ff;
+  --amber:#92400e; --amberbg:#fffbeb; --red:#991b1b; --redbg:#fef2f2;
+  --purple:#6d28d9; --purplebg:#f5f3ff; --teal:#0e7490; --tealbg:#ecfeff;
+  --border:#e2e8f0; --code:#0f172a; --codebg:#f1f5f9;
+  --sidebar-w:300px;
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth; scroll-padding-top:70px}
+body{margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,sans-serif;background:var(--bg);color:var(--ink);line-height:1.65;font-size:16px}
+#progress{position:fixed;top:0;left:0;height:4px;background:linear-gradient(90deg,var(--accent),var(--accent2));width:0;z-index:1000;transition:width .1s linear}
+header.site{background:linear-gradient(135deg,var(--navy),#2d3f66);color:#fff;padding:28px 24px 24px}
+header.site .wrap{max-width:1280px;margin:0 auto}
+header.site h1{margin:0 0 6px;font-size:1.55rem;letter-spacing:.3px}
+header.site .sub{margin:0;opacity:.85;font-size:.98rem}
+header.site .crumbs{margin-top:10px;font-size:.8rem;opacity:.65}
+#menuBtn{display:none;position:fixed;top:10px;right:14px;z-index:1100;background:var(--accent);color:#fff;border:none;border-radius:8px;padding:9px 13px;font-size:1.05rem;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.3)}
+.layout{display:flex;max-width:1280px;margin:0 auto;align-items:flex-start}
+nav#sidebar{width:var(--sidebar-w);flex:0 0 var(--sidebar-w);position:sticky;top:4px;height:calc(100vh - 4px);overflow-y:auto;background:var(--navy);padding:18px 14px 40px;font-size:.87rem}
+nav#sidebar a{color:#c7d2e8;text-decoration:none;display:block;padding:5px 10px;border-radius:6px;border-left:3px solid transparent}
+nav#sidebar a:hover{background:#26365c;color:#fff}
+nav#sidebar a.active{background:#26365c;color:#fff;border-left-color:var(--accent2)}
+nav#sidebar .grp{color:#7f93bd;text-transform:uppercase;font-size:.68rem;letter-spacing:1.1px;margin:16px 8px 4px;font-weight:700}
+nav#sidebar .sub2 a{padding-left:24px;font-size:.83rem}
+main{flex:1 1 auto;min-width:0;padding:26px 34px 80px}
+section.chapter{background:var(--card);border:1px solid var(--border);border-radius:12px;padding:26px 30px;margin:0 0 30px;box-shadow:0 1px 3px rgba(15,23,42,.05)}
+h2{font-size:1.5rem;color:var(--navy);margin:0 0 14px;padding-bottom:10px;border-bottom:3px solid var(--accent);line-height:1.3}
+h3{font-size:1.18rem;color:#173a6b;margin:26px 0 10px}
+h4{font-size:1.02rem;color:#334155;margin:20px 0 8px}
+p{margin:10px 0}
+ul,ol{margin:8px 0 12px}
+li{margin:5px 0}
+code{font-family:"SFMono-Regular",Consolas,"Liberation Mono",Menlo,monospace;background:var(--codebg);color:var(--code);padding:1px 6px;border-radius:5px;font-size:.9em}
+pre{background:#0b1220;color:#dbe7f7;border-radius:10px;padding:16px 18px;overflow-x:auto;font-family:Consolas,Menlo,monospace;font-size:.9rem;line-height:1.55;margin:12px 0}
+pre code{background:none;color:inherit;padding:0;font-size:inherit}
+pre .c{color:#7ee2a8;font-style:italic}
+pre .m{color:#7dd3fc;font-weight:700}
+pre .n{color:#fbbf24}
+pre .lbl{color:#f0abfc}
+pre .dim{color:#8aa2c4}
+table{border-collapse:collapse;width:100%;margin:14px 0;font-size:.93rem;background:#fff}
+th{background:var(--navy);color:#fff;text-align:left;padding:9px 12px;font-weight:600}
+td{border:1px solid var(--border);padding:8px 12px;vertical-align:top}
+tr:nth-child(even) td{background:#f8fafc}
+.twrap{overflow-x:auto}
+.tag{display:inline-block;font-size:.68rem;font-weight:700;letter-spacing:.4px;text-transform:uppercase;padding:2px 9px;border-radius:999px;vertical-align:middle;margin-right:6px}
+.tag-src{background:var(--greenbg);color:var(--green);border:1px solid #a7f3d0}
+.tag-clar{background:var(--bluebg);color:var(--blue);border:1px solid #bfdbfe}
+.tag-ext{background:var(--purplebg);color:var(--purple);border:1px solid #ddd6fe}
+.note{border-radius:10px;padding:14px 16px;margin:14px 0;border:1px solid;border-left-width:5px}
+.note .nt{display:block;font-size:.72rem;font-weight:800;text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px}
+.def{background:var(--bluebg);border-color:#bfdbfe;border-left-color:var(--blue)} .def .nt{color:var(--blue)}
+.key{background:var(--greenbg);border-color:#a7f3d0;border-left-color:var(--green)} .key .nt{color:var(--green)}
+.warn{background:var(--amberbg);border-color:#fde68a;border-left-color:var(--amber)} .warn .nt{color:var(--amber)}
+.mistake{background:var(--redbg);border-color:#fecaca;border-left-color:var(--red)} .mistake .nt{color:var(--red)}
+.examplenote{background:var(--tealbg);border-color:#a5f3fc;border-left-color:var(--teal)} .examplenote .nt{color:var(--teal)}
+.examnote{background:var(--purplebg);border-color:#ddd6fe;border-left-color:var(--purple)} .examnote .nt{color:var(--purple)}
+.formula-box{background:#fff;border:1.5px solid var(--purple);border-radius:10px;padding:14px 18px;margin:14px 0;text-align:center;font-size:1.05rem}
+.formula-box .fm{font-family:Georgia,"Times New Roman",serif;font-style:italic}
+.formula-box .fexp{text-align:left;font-size:.85rem;color:var(--muted);margin-top:8px;border-top:1px dashed var(--border);padding-top:8px}
+details{border:1px solid var(--border);border-radius:10px;background:#fbfdff;margin:10px 0;padding:0}
+details>summary{cursor:pointer;padding:11px 16px;font-weight:600;color:var(--navy);list-style:none}
+details>summary::before{content:"▸ ";color:var(--accent)}
+details[open]>summary::before{content:"▾ "}
+details>summary:hover{background:#f0f6ff;border-radius:10px}
+details .dbody{padding:4px 18px 14px}
+.quiz{border:1px solid #c7d2fe;background:#f5f7ff;border-radius:12px;padding:16px 20px;margin:22px 0}
+.quiz h4{margin:0 0 8px;color:#3730a3}
+.bits{display:flex;flex-wrap:wrap;gap:0;margin:10px 0 4px;font-family:Consolas,monospace}
+.bits .bf{border:1.5px solid var(--navy);padding:8px 10px;text-align:center;font-size:.82rem;min-width:60px}
+.bits .bf:first-child{border-radius:6px 0 0 6px}
+.bits .bf:last-child{border-radius:0 6px 6px 0}
+.bits .bf .rng{display:block;font-size:.66rem;color:var(--muted);margin-top:3px}
+.bits .bf.mode{background:#fef3c7}.bits .bf.opc{background:#dbeafe}.bits .bf.adr{background:#dcfce7}
+.flow{display:flex;flex-direction:column;align-items:center;gap:0;margin:14px 0}
+.fbox{border:2px solid var(--navy);border-radius:9px;background:#fff;padding:8px 20px;font-weight:600;color:var(--navy);text-align:center;font-size:.92rem;max-width:520px}
+.fbox .sm{display:block;font-weight:400;font-size:.78rem;color:var(--muted)}
+.farrow{color:var(--accent);font-size:1.3rem;line-height:1.1;margin:1px 0}
+.flow .loop{font-size:.8rem;color:var(--muted);border:1.5px dashed var(--accent);border-radius:999px;padding:4px 14px;margin-top:8px}
+.prob{border:1.5px solid var(--teal);border-radius:12px;padding:16px 20px;margin:18px 0;background:#fdfeff}
+.prob h4{margin:0 0 6px;color:var(--teal)}
+.prob .step{margin:8px 0}
+.prob .step b{color:var(--navy)}
+.state-table td{font-family:Consolas,monospace;font-size:.86rem}
+.cmp2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin:12px 0}
+.cmp2 .col{border:1px solid var(--border);border-radius:10px;padding:12px 16px;background:#fff}
+.cmp2 .col h5{margin:0 0 6px;color:var(--navy);font-size:.95rem}
+.svgbox{background:#fff;border:1px solid var(--border);border-radius:10px;padding:14px;margin:14px 0;text-align:center;overflow-x:auto}
+.svgbox figcaption{font-size:.82rem;color:var(--muted);margin-top:8px}
+.stackdemo td{text-align:center}
+.toc-inline{background:#f8fafc;border:1px solid var(--border);border-radius:10px;padding:12px 18px;font-size:.9rem}
+mark{background:#fef08a;padding:0 3px;border-radius:3px}
+.small{font-size:.85rem;color:var(--muted)}
+.hl{background:#fff7ed}
+footer.site{max-width:1280px;margin:0 auto;padding:20px 34px 40px;color:var(--muted);font-size:.82rem}
+kbd{background:#e2e8f0;border:1px solid #cbd5e1;border-radius:5px;padding:0 6px;font-family:Consolas,monospace;font-size:.85em}
+@media (max-width:960px){
+  #menuBtn{display:block}
+  nav#sidebar{position:fixed;left:0;top:0;height:100vh;z-index:1050;transform:translateX(-105%);transition:transform .25s ease}
+  nav#sidebar.open{transform:translateX(0)}
+  .layout{display:block}
+  main{padding:18px 16px 60px}
+  section.chapter{padding:18px 16px}
+  .cmp2{grid-template-columns:1fr}
+  header.site{padding:22px 16px}
+}
+</style>
+</head>
+<body>
+<div id="progress"></div>
+<button id="menuBtn" onclick="document.getElementById('sidebar').classList.toggle('open')">☰ Menu</button>
+
+<header class="site">
+  <div class="wrap">
+    <h1>COMPUTER ORGANIZATION &amp; ARCHITECTURE</h1>
+    <p class="sub">Chapter 1.3 — Instruction Set &amp; Instruction Cycle &nbsp;·&nbsp; A Complete Beginner-Friendly Learning Resource</p>
+    <p class="crumbs">Based on course lecture notes CONT_25CST-201 — Lectures 1.3.1 · 1.3.2 · 1.3.3 · 1.3.4 &nbsp;|&nbsp; Rebuilt as an interactive textbook</p>
+  </div>
+</header>
+
+<div class="layout">
+<nav id="sidebar" aria-label="Table of contents">
+  <div class="grp">Start Here</div>
+  <a href="#overview">How to Use This Guide</a>
+  <a href="#prereq">0 · Prerequisites You Need First</a>
+
+  <div class="grp">Lecture 1.3.1</div>
+  <a href="#terminology">1 · Basic Terminologies</a>
+  <a href="#isa">2 · Instruction Set Architecture</a>
+  <a href="#lang-levels">3 · Levels of Programming Languages</a>
+  <a href="#translators">4 · Translators: Compiler / Interpreter / Assembler</a>
+  <a href="#assembly">5 · Assembly Language from Zero</a>
+  <a href="#machine-instructions">6 · Machine Language &amp; Machine Instructions</a>
+  <a href="#cpu-execution">7 · How the CPU Executes an Instruction</a>
+  <a href="#machine-cycle">8 · T-States, Bus Cycles, Machine Cycles</a>
+
+  <div class="grp">Lecture 1.3.2</div>
+  <a href="#addressing-intro">9 · Why Addressing Modes Exist</a>
+  <a href="#effective-address">10 · Effective Address (EA)</a>
+  <div class="sub2">
+    <a href="#am-implied">10.1 Implied Mode</a>
+    <a href="#am-immediate">10.2 Immediate Mode</a>
+    <a href="#am-register">10.3 Register Mode</a>
+    <a href="#am-reg-indirect">10.4 Register Indirect Mode</a>
+    <a href="#am-auto">10.5 Auto-increment / Auto-decrement</a>
+    <a href="#am-direct">10.6 Direct Mode</a>
+    <a href="#am-indirect">10.7 Indirect Mode</a>
+    <a href="#am-indexed">10.8 Indexed Mode</a>
+    <a href="#am-relative">10.9 Relative Mode</a>
+    <a href="#ea-table">10.10 EA Comparison Table</a>
+  </div>
+  <a href="#instruction-cycle">11 · The Instruction Cycle</a>
+
+  <div class="grp">Lecture 1.3.3</div>
+  <a href="#operations">12 · Operations in the Instruction Set</a>
+  <div class="sub2">
+    <a href="#op-arith">12.1 Arithmetic</a>
+    <a href="#op-logic">12.2 Logical</a>
+    <a href="#op-data">12.3 Data Transfer</a>
+    <a href="#op-control">12.4 Timing &amp; Control</a>
+  </div>
+  <a href="#flags">13 · Flags / Condition Codes</a>
+  <a href="#instr-types">14 · Types of Instructions (16-bit Format)</a>
+  <div class="sub2">
+    <a href="#reg-ref">14.1 Register-Reference</a>
+    <a href="#mem-ref">14.2 Memory-Reference</a>
+    <a href="#io-ref">14.3 Input/Output</a>
+  </div>
+
+  <div class="grp">Lecture 1.3.4</div>
+  <a href="#classification">15 · Instruction Set Classification</a>
+  <a href="#risc-cisc">16 · RISC vs CISC</a>
+  <a href="#instr-format">17 · Instruction Format Basics</a>
+  <a href="#fixed-variable">18 · Fixed vs Variable Length</a>
+  <a href="#address-formats">19 · Zero / One / Two / Three-Address</a>
+
+  <div class="grp">Practice &amp; Revision</div>
+  <a href="#problems">20 · Problem Solving</a>
+  <a href="#confusions">21 · Things Students Commonly Mix Up</a>
+  <a href="#exam">22 · Exam-Oriented Revision</a>
+  <a href="#references">23 · References &amp; Further Reading</a>
+</nav>
+
+<main>
+<!-- ===================== OVERVIEW ===================== -->
+<section class="chapter" id="overview">
+<h2>How to Use This Guide</h2>
+<p>This guide rebuilds the complete content of <strong>Chapter 1.3</strong> of a Computer Organization and Architecture course — four lectures (1.3.1 through 1.3.4) covering programming language levels, assembly and machine instructions, addressing modes, the instruction cycle, instruction operations, instruction types, and instruction formats — and expands it into a full teaching resource that assumes <em>no prior knowledge</em> of computer architecture.</p>
+<p>Three kinds of content are labelled throughout so you always know where information comes from:</p>
+<p>
+<span class="tag tag-src">From Lecture Notes</span> Content that comes directly from the source lecture document.<br>
+<span class="tag tag-clar">Clarification</span> Extra explanation added to make the lecture material understandable without changing its meaning.<br>
+<span class="tag tag-ext">External Research</span> Material added from standard textbooks and authoritative references where the notes needed support.
+</p>
+<div class="toc-inline">
+<strong>Reading path:</strong> Read in order if you are a beginner — every section builds on the previous one. If you are revising for an exam, jump straight to <a href="#problems">Problem Solving</a>, <a href="#confusions">Common Confusions</a>, and <a href="#exam">Exam-Oriented Revision</a>. Every major topic ends with a <em>Check Your Understanding</em> box — try the questions before opening the answers.
+</div>
+<div class="note key"><span class="nt">The Big Picture</span>
+This chapter answers one question: <strong>how does a program — text written by a human — end up as electrical actions inside a CPU?</strong> The journey is: high-level language → assembly language → machine code (binary) → memory → CPU fetch → decode → execute. Every section of this chapter zooms into one part of that journey.</div>
+</section>
+
+<!-- ===================== PREREQUISITES ===================== -->
+<section class="chapter" id="prereq">
+<h2>0 · Prerequisites You Need First</h2>
+<p><span class="tag tag-clar">Clarification</span> The lecture notes begin by using words like <em>instruction</em>, <em>register</em>, <em>memory</em>, and <em>address</em> without defining them. This section defines every one of those words from first principles, so that nothing later in the guide will feel like magic.</p>
+
+<h3>0.1 What is a computer?</h3>
+<p>Strip away the screen, keyboard, and case, and a computer is a machine that does exactly three things: it <strong>stores</strong> numbers, it <strong>transforms</strong> numbers (add, compare, move), and it <strong>follows a stored list of steps</strong> that says which transformations to do and in what order. That stored list of steps is a <em>program</em>. The computer is special among machines because the list of steps is itself stored as data inside the machine — change the list and the same hardware becomes a calculator, a word processor, or a game. This idea is called the <strong>stored-program concept</strong>.</p>
+
+<h3>0.2 What is a CPU?</h3>
+<p>The <strong>Central Processing Unit (CPU)</strong> — also called the <em>processor</em> — is the part that actually performs the steps. Think of it as an extremely fast, extremely obedient, and extremely literal worker. It can do only a small set of very simple things (add two numbers, move a number from one place to another, compare two numbers, jump to a different step), but it does billions of them per second. Inside the CPU there are three sub-parts you will meet throughout this chapter:</p>
+<ul>
+<li><strong>Control Unit (CU)</strong> — the manager. It reads each instruction, figures out what it means, and sends control signals telling every other part what to do and when.</li>
+<li><strong>Arithmetic Logic Unit (ALU)</strong> — the calculator. It performs all arithmetic (add, subtract, multiply, divide) and logical (AND, OR, NOT, shift) operations.</li>
+<li><strong>Registers</strong> — a handful of tiny, ultra-fast storage cells inside the CPU itself (explained below).</li>
+</ul>
+
+<h3>0.3 What is memory?</h3>
+<p><strong>Main memory</strong> (RAM) is a huge array of numbered storage cells that sits <em>outside</em> the CPU. Picture a street with millions of identical mailboxes in a row. Each mailbox has a unique number — its <strong>address</strong> — and holds a small fixed amount of information — its <strong>contents</strong> (usually one byte = 8 bits). Two completely different ideas live in memory, both stored as numbers:</p>
+<ul>
+<li><strong>Instructions</strong> — the steps of the program.</li>
+<li><strong>Data</strong> — the values the program works on (numbers, text, pixels).</li>
+</ul>
+<div class="note key"><span class="nt">Key Idea</span> The address of a memory cell and the contents of that cell are different things. Address <code>2000</code> is a location; <em>what is stored at</em> location 2000 is data (or an instruction). Confusing "address" with "contents of the address" is the single most common beginner mistake in this entire chapter.</div>
+
+<h3>0.4 What is an address?</h3>
+<p>An <strong>address</strong> is simply the number that identifies one memory cell, exactly like a house number on a street. If a CPU has address wires that can carry a 16-bit number, it can name 2<sup>16</sup> = 65,536 different memory cells. When you read "memory location 2000H", the <code>H</code> means the number is written in <em>hexadecimal</em> (explained in 0.10), so it is just one particular mailbox number.</p>
+
+<h3>0.5 What is a register?</h3>
+<p>A <strong>register</strong> is a tiny storage cell built <em>inside</em> the CPU. You can think of registers as the CPU's hands: memory is a large warehouse across the street, but the CPU can only <em>work on</em> what it is currently holding. Registers are few (from 8 to a few dozen in simple processors), each holds one small number, and they are the fastest storage in the machine. Registers you will meet in this chapter:</p>
+<div class="twrap"><table>
+<tr><th>Register</th><th>Full name</th><th>Job</th></tr>
+<tr><td><code>PC</code></td><td>Program Counter (also called Instruction Pointer, IP)</td><td>Holds the <em>address</em> of the <em>next</em> instruction to execute.</td></tr>
+<tr><td><code>IR</code></td><td>Instruction Register</td><td>Holds the <em>instruction currently being executed</em>, as raw bits.</td></tr>
+<tr><td><code>AC</code> / <code>AX</code> / <code>A</code></td><td>Accumulator</td><td>The default "working" register — most arithmetic leaves its result here in simple CPUs.</td></tr>
+<tr><td><code>BX, CX, DX</code> (x86), <code>B, C, D, H, L</code> (8085), <code>R0–R7</code> (8051)</td><td>General-purpose registers</td><td>Scratch space for values the program is actively using.</td></tr>
+<tr><td><code>FLAGS</code></td><td>Flag / status register</td><td>A set of single-bit indicators (Zero, Sign, Carry, Overflow…) describing the most recent result.</td></tr>
+</table></div>
+
+<h3>0.6 What is a program? What is an instruction?</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> The lecture notes define these as:</p>
+<div class="note def"><span class="nt">Definitions (Lecture 1.3.1)</span>
+<strong>Instruction</strong> — an order given to a computer processor by a computer program to compute any task.<br>
+<strong>Program</strong> — a sequence of machine instructions.<br>
+<strong>Language</strong> — a system of communication.<br>
+<strong>Programming language</strong> — the set of rules a programmer uses to develop software or write instructions a computer can understand.</div>
+<p><span class="tag tag-clar">Clarification</span> An analogy: a <em>program</em> is a recipe; an <em>instruction</em> is one numbered step of that recipe ("add 2 eggs", "stir for 1 minute"). The CPU is a cook who can read exactly one step at a time, perform it, and move to the next. Every CPU family has its own fixed menu of steps it understands — that menu is its <em>instruction set</em> (Section 2).</p>
+
+<h3>0.7 What is machine code? Why binary?</h3>
+<p>The CPU is built from millions of microscopic switches (transistors), and a switch has exactly two stable states: <em>on</em> or <em>off</em>. That is why everything inside a computer is encoded with just two digits, 0 and 1 — <strong>binary</strong>. <span class="tag tag-src">From Lecture Notes</span> As the lecture notes put it: "Turn the switch on to represent a one; turn it off to represent a zero." An instruction, then, is physically nothing more than a <strong>pattern of bits</strong> — for example <code>10110000 00000101</code>. That bit pattern is <strong>machine code</strong>: the only language the CPU hardware executes directly. Humans almost never write machine code by hand; we write assembly or high-level languages and let translator programs produce the bits (Section 4).</p>
+
+<h3>0.8 What is data? What is an operand?</h3>
+<p><strong>Data</strong> is any value a program manipulates: the number 55, the letter 'A', a pixel color. An <strong>operand</strong> is the specific piece of data (or the place holding it) that one instruction works on. In the instruction <code>ADD AX, BX</code> the operation is "add" and the <em>operands</em> are the values in registers AX and BX.</p>
+
+<h3>0.9 What is an opcode?</h3>
+<p>Every instruction the CPU understands has two parts:</p>
+<div class="bits">
+<div class="bf opc"><b>Opcode</b><span class="rng">"WHAT to do"</span></div>
+<div class="bf adr"><b>Operand(s) / Address field</b><span class="rng">"to WHOM / with WHAT"</span></div>
+</div>
+<p>The <strong>opcode (operation code)</strong> is the part of the instruction that says <em>which</em> operation to perform — add, move, jump, halt. It must be encoded as bits because the CPU's decoder is hardware that reads bits. For example, in a toy instruction set, <code>0001</code> might mean "ADD" and <code>0010</code> might mean "MOVE". The operand field says <em>where the data is</em> — a register number, a memory address, or a literal value.</p>
+
+<h3>0.10 Binary and hexadecimal in 2 minutes</h3>
+<ul>
+<li><strong>Binary (base 2)</strong>: digits 0 and 1. Each position doubles: <code>1011</code> = 8+0+2+1 = 11 in decimal. One binary digit is a <strong>bit</strong>; 8 bits are a <strong>byte</strong>.</li>
+<li><strong>Hexadecimal (base 16)</strong>: digits 0–9 then A=10, B=11, C=12, D=13, E=14, F=15. Hex exists because binary is tedious for humans: each hex digit is exactly 4 bits, so one byte is exactly two hex digits. <code>1111 1111</code> = <code>FF</code> = 255. You will see suffixes: <code>55H</code> or <code>0x55</code> mean hex; <code>55</code> alone usually means decimal.</li>
+</ul>
+<div class="examplenote note"><span class="nt">Quick Conversion Drill</span>
+<code>25H</code> = 2×16 + 5 = <b>37 decimal</b> = <code>0010 0101</code> binary. When the notes say "M[40H] = 25H" they mean: memory cell number 0x40 holds the byte 0x25.</div>
+
+<h3>0.11 Why does the CPU need instructions at all?</h3>
+<p>Because the CPU is hardware: it cannot infer your intent. Hardware only reacts to electrical patterns. An instruction is the <em>contract</em> between human intention and hardware behavior — a bit pattern that the CPU's control unit was physically wired to interpret as a specific action. Nothing else can drive the CPU.</p>
+
+<h3>0.12 How does software become something the CPU can execute?</h3>
+<p><span class="tag tag-clar">Clarification</span> Here is the full pipeline that the whole chapter keeps referring back to:</p>
+<div class="flow">
+<div class="fbox">High-level program (C / Python / Java)<span class="sm">easy for humans, meaningless to hardware</span></div>
+<div class="farrow">↓ compiler / interpreter</div>
+<div class="fbox">Assembly language (MOV, ADD, JMP)<span class="sm">human-readable version of machine instructions</span></div>
+<div class="farrow">↓ assembler</div>
+<div class="fbox">Machine code (binary bit patterns)<span class="sm">the only form the CPU understands</span></div>
+<div class="farrow">↓ loaded into</div>
+<div class="fbox">Memory (instructions stored at addresses)</div>
+<div class="farrow">↓ CPU reads the address in PC</div>
+<div class="fbox">FETCH → DECODE → EXECUTE<span class="sm">repeated billions of times per second</span></div>
+</div>
+<p>Keep this picture in mind. Section 3 explains the top three boxes, Section 6 the middle two, and Section 7 the bottom one.</p>
+
+<div class="quiz"><h4>✔ Check Your Understanding</h4>
+<ol>
+<li>What is the difference between an address and the contents of an address?</li>
+<li>Which register always knows where the <em>next</em> instruction lives?</li>
+<li>Why can't a CPU directly execute a line of C code like <code>x = a + b;</code>?</li>
+<li>Convert <code>3AH</code> to decimal and binary.</li>
+<li>In <code>ADD AX, BX</code>, identify the opcode and the operands.</li>
+</ol>
+<details><summary>Show answers</summary><div class="dbody">
+<ol>
+<li>The address is the <em>number of the memory cell</em> (the mailbox number); the contents are the <em>value stored in that cell</em> (the letter inside). Instructions frequently contain addresses, not values — which is exactly what addressing modes (Section 9–10) are about.</li>
+<li>The Program Counter (PC), also called the Instruction Pointer (IP).</li>
+<li>Because the CPU hardware only interprets binary machine-code patterns. The C line must first be translated (compiled → assembled) into machine instructions.</li>
+<li>3AH = 3×16+10 = <b>58</b> decimal = <code>0011 1010</code> binary.</li>
+<li>Opcode: <code>ADD</code>. Operands: register <code>AX</code> (destination) and register <code>BX</code> (source).</li>
+</ol>
+</div></details>
+</div>
+</section>
+<!-- ===================== LECTURE 1.3.2 ===================== -->
+<section class="chapter" id="terminology">
+<h2>1 · Basic Terminologies <span class="small">(Lecture 1.3.1)</span></h2>
+<p><span class="tag tag-src">From Lecture Notes</span> Lecture 1.3.1 opens with four definitions that the whole course depends on. You have already seen them in Section 0.6; here they are together as exam-ready definitions:</p>
+<div class="twrap"><table>
+<tr><th>Term</th><th>Definition (lecture notes)</th><th>One-line intuition</th></tr>
+<tr><td><strong>Instruction</strong></td><td>Order given to a computer processor by a computer program to compute any task.</td><td>One step of a recipe.</td></tr>
+<tr><td><strong>Program</strong></td><td>A sequence of machine instructions.</td><td>The whole recipe.</td></tr>
+<tr><td><strong>Language</strong></td><td>A system of communication.</td><td>Agreed symbols + rules.</td></tr>
+<tr><td><strong>Programming language</strong></td><td>Set of rules a programmer uses to develop software / write instructions a computer can understand.</td><td>A language designed for talking to computers.</td></tr>
+</table></div>
+<div class="note key"><span class="nt">Why this matters</span> Everything in this chapter is a refinement of these four ideas: <em>which</em> language the instruction is written in (Section 3), <em>how</em> the instruction is encoded as bits (Sections 6, 14, 17–19), <em>how</em> the CPU finds and executes it (Sections 7, 11), and <em>how</em> it locates its data (Sections 9–10).</div>
+</section>
+
+<section class="chapter" id="isa">
+<h2>2 · Instruction Set Architecture (ISA)</h2>
+<p><span class="tag tag-src">From Lecture Notes</span> The lecture notes introduce the ISA with these statements:</p>
+<div class="note def"><span class="nt">From the Lecture Document</span>
+"The <strong>instruction set</strong> provides commands to the processor, to tell it what it needs to do. The instruction set consists of <em>addressing modes, instructions, native data types, registers, memory architecture, interrupt and exception handling, and external I/O</em>."<br><br>
+"An <strong>instruction set architecture (ISA)</strong> is an abstract model of a computer. A realization of an ISA is called an <strong>implementation</strong>. An ISA permits multiple implementations that may vary in performance, physical size, and monetary cost, because the ISA serves as the <strong>interface between software and hardware</strong>."<br><br>
+"Software written for an ISA can run on different implementations of the same ISA. This has enabled <strong>binary compatibility</strong> between different generations of computers, and the development of computer families."</div>
+
+<h3>2.1 What is an ISA, really?</h3>
+<p><span class="tag tag-clar">Clarification</span> An ISA is the <strong>complete contract</strong> that a CPU family offers to programmers. It answers: "If you give me a machine instruction, what exactly will I do?" It specifies, among other things:</p>
+<ul>
+<li><strong>The instruction set</strong> — every operation the CPU can perform (ADD, MOV, JMP…) and how each is encoded in bits.</li>
+<li><strong>Registers</strong> — which registers exist, their sizes, and their special roles.</li>
+<li><strong>Native data types</strong> — the sizes and formats the hardware understands (8/16/32/64-bit integers, floating-point formats).</li>
+<li><strong>Addressing modes</strong> — the legal ways an instruction may refer to its data (Sections 9–10).</li>
+<li><strong>Memory architecture</strong> — how memory is addressed (byte-addressable? how large an address?).</li>
+<li><strong>Interrupt / exception handling</strong> — how the CPU reacts to hardware signals and errors.</li>
+<li><strong>External I/O</strong> — how instructions communicate with devices (Section 14.3).</li>
+</ul>
+<div class="note key"><span class="nt">Analogy</span> An ISA is like the <strong>rules of chess</strong>. The rules define the pieces, the legal moves, and how you win — but they say nothing about whether the board is wood, plastic, or a phone screen. Many physical chess sets (implementations) can host the same game (ISA). Similarly, the x86 ISA defines what every instruction does; Intel and AMD both build physically different chips that play by those same rules.</div>
+
+<h3>2.2 ISA vs Microarchitecture vs Hardware Implementation</h3>
+<p><span class="tag tag-clar">Clarification</span> <span class="tag tag-ext">External Research</span> Beginners constantly mix these three layers up. They are distinct:</p>
+<div class="twrap"><table>
+<tr><th>Layer</th><th>What it is</th><th>Example question it answers</th><th>Example</th></tr>
+<tr><td><strong>ISA (architecture)</strong></td><td>The programmer-visible contract: instructions, registers, data types, addressing modes.</td><td>"What does <code>ADD</code> do, and how is it encoded?"</td><td>x86, ARM, MIPS, RISC-V</td></tr>
+<tr><td><strong>Microarchitecture</strong></td><td>A specific internal design that <em>implements</em> an ISA: pipeline depth, cache layout, execution units.</td><td>"How many pipeline stages? How is ADD executed in hardware?"</td><td>Intel Skylake vs AMD Zen — both implement x86 differently</td></tr>
+<tr><td><strong>Hardware implementation</strong></td><td>The physical chip: transistors, silicon process, clock speed, power.</td><td>"5 nm or 7 nm? 3 GHz or 5 GHz?"</td><td>A specific Core i7 part number</td></tr>
+</table></div>
+<p>This is exactly what the lecture notes mean by "an ISA permits multiple implementations that may vary in performance, physical size, and monetary cost." Two CPUs can run the <em>same binary program</em> (same ISA) while one finishes faster (different microarchitecture and hardware). That property — <strong>binary compatibility</strong> — is why a program compiled for x86 in 1995 still runs on a 2025 x86 laptop, and it is why the notes call the ISA "one of the most important abstractions in computing today."</p>
+<div class="note examnote"><span class="nt">Exam Note</span> A classic 2-mark question: <em>"Why is the ISA called the interface between software and hardware?"</em> Answer: software is written against the ISA (compilers generate instructions the ISA defines); hardware is built to satisfy the ISA (the control unit decodes exactly those instructions). Neither side needs to know the other's internal details — they only need to honor the shared contract.</div>
+</section>
+
+<section class="chapter" id="lang-levels">
+<h2>3 · Levels of Programming Languages</h2>
+<p><span class="tag tag-src">From Lecture Notes</span> The lecture notes divide programming languages into three levels: <strong>machine language</strong>, <strong>assembly language</strong>, and <strong>high-level language</strong>. Think of them as three altitudes above the hardware:</p>
+<div class="flow">
+<div class="fbox" style="border-color:var(--green)">HIGH-LEVEL LANGUAGE<span class="sm">C, Java, Python — variables, loops, objects; portable; needs compiler/interpreter</span></div>
+<div class="farrow">↑ more abstract, easier for humans ↑</div>
+<div class="fbox" style="border-color:var(--accent)">ASSEMBLY LANGUAGE<span class="sm">MOV, ADD, JMP — mnemonics for machine instructions; machine-specific; needs assembler</span></div>
+<div class="farrow">↑ closer to hardware ↑</div>
+<div class="fbox" style="border-color:var(--red)">MACHINE LANGUAGE<span class="sm">pure binary (0s and 1s) — the only language the CPU executes directly</span></div>
+</div>
+
+<h3>3.1 Machine Language</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> The notes say: machine language is the language <em>closest to the hardware itself</em>; programs in it are <em>highly efficient</em>; and it is in the form of <em>binary code (0 and 1)</em>, which makes the codes <em>difficult to memorise</em>.</p>
+<p><span class="tag tag-clar">Clarification</span> "Closest to hardware" means there is <em>no translation at all</em> between the program and what the CPU executes — the program <em>is</em> the bit patterns. "Highly efficient" means zero translation overhead and total control, not that humans write it quickly — they do not.</p>
+<h4>The light-bulb example (from the lecture notes)</h4>
+<p><span class="tag tag-src">From Lecture Notes</span> The notes give a tiny imaginary machine — a programmable light bulb — whose entire machine language is five binary commands:</p>
+<div class="twrap"><table>
+<tr><th>Machine code (binary)</th><th>Meaning</th></tr>
+<tr><td><code>00000000</code></td><td>STOP PROGRAM</td></tr>
+<tr><td><code>00000001</code></td><td>TURN BULB ON</td></tr>
+<tr><td><code>00000010</code></td><td>TURN BULB OFF</td></tr>
+<tr><td><code>00000100</code></td><td>DIM BULB BY 10%</td></tr>
+<tr><td><code>00001000</code></td><td>BRIGHTEN BULB BY 10%</td></tr>
+</table></div>
+<p>Read this table carefully, because it teaches the essence of machine language: <strong>each distinct bit pattern is wired to one distinct hardware action</strong>. A "program" for this bulb is just a sequence of these bytes. For example, the byte sequence <code>00000001 00001000 00001000 00000000</code> means: turn on, brighten, brighten, stop. The bulb's control circuit reads each byte and performs the matching action — no understanding, no intelligence, just wiring. That is precisely how a real CPU treats machine code, only with hundreds of patterns instead of five.</p>
+<p><span class="tag tag-clar">Clarification</span> A realistic modern example: on a real x86 CPU, the byte <code>0x90</code> (<code>10010000</code>) is the machine instruction NOP ("do nothing"), and <code>0xB8</code> begins a "load a value into AX" instruction. Same principle as the bulb — one bit pattern, one hardware action — just a much bigger vocabulary. You will see this concretely in Section 6.</p>
+
+<h3>3.2 Assembly Language</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> The notes define assembly language as a <em>low-level programming language</em> in which there is a <em>very strong (but often not one-to-one) correspondence</em> between the language and the architecture's machine code instructions. Each assembly language is <em>specific to a particular computer architecture</em>, unlike high-level languages which are generally <em>portable</em>. Assembly may also be called <em>symbolic machine code</em>. It is converted into executable machine code by a utility program called an <strong>assembler</strong>; the conversion process is called <strong>assembly</strong>, and the time at which it happens is <strong>assembly time</strong>.</p>
+<p><span class="tag tag-clar">Clarification</span> Assembly is machine language wearing a name tag. Instead of memorising that <code>00000001</code> turns the bulb on, you write <code>ON</code>; instead of <code>10110000 00000101</code>, you write <code>MOV AX, 5</code>. The assembler is a simple dictionary-lookup program that replaces each mnemonic with its bit pattern. "Not one-to-one" means some assembly lines (macros, directives) can expand to several machine instructions or to no instruction at all. Section 5 covers assembly in full depth.</p>
+
+<h3>3.3 High-Level Language</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> The notes describe a high-level language (HLL) as a programming language <em>designed to simplify computer programming</em>, "high-level" because it is <em>several steps removed from the actual code run on the processor</em>. HLL source code has <em>easy-to-read syntax</em> that is later converted into a low-level language a specific CPU can run. Rather than dealing with registers, memory addresses and call stacks, HLLs deal with <em>variables, arrays, objects, complex arithmetic or boolean expressions, subroutines and functions, loops, threads, locks</em> — with a focus on <em>usability over optimal program efficiency</em>. Few, if any, HLL elements translate directly into a machine's native opcodes.</p>
+<p><span class="tag tag-clar">Clarification</span> The key trade: one line of Python (<code>total = sum(prices)</code>) may expand into dozens of machine instructions. You give up fine control and some speed; you gain readability, portability, and development speed. One HLL statement ↔ many machine instructions; one assembly statement ↔ (usually) one machine instruction. That ratio is the defining difference between the levels.</p>
+
+<h3>3.4 Comparison of the three levels</h3>
+<div class="twrap"><table>
+<tr><th>Aspect</th><th>Machine Language</th><th>Assembly Language</th><th>High-Level Language</th></tr>
+<tr><td>What it looks like</td><td><code>10110000 00000101</code></td><td><code>MOV AX, 5</code></td><td><code>ax = 5;</code></td></tr>
+<tr><td>Who/what understands it</td><td>The CPU directly; almost no humans</td><td>Humans (trained) + assembler</td><td>Humans + compiler/interpreter</td></tr>
+<tr><td>Abstraction level</td><td>None — raw hardware</td><td>Low — symbolic hardware</td><td>High — variables, loops, objects</td></tr>
+<tr><td>Translation needed</td><td>None</td><td>Assembler</td><td>Compiler or interpreter</td></tr>
+<tr><td>Portability</td><td>None — one CPU family only</td><td>None — one architecture only</td><td>High — runs on many architectures</td></tr>
+<tr><td>Execution efficiency</td><td>Highest possible</td><td>Near-machine efficiency</td><td>Lower (translation/runtime overhead)</td></tr>
+<tr><td>Difficulty for humans</td><td>Extremely hard, error-prone</td><td>Hard, verbose</td><td>Easiest</td></tr>
+<tr><td>Correspondence to machine code</td><td>1:1 (it <em>is</em> machine code)</td><td>≈1:1 (often not exactly)</td><td>1 statement → many instructions</td></tr>
+</table></div>
+
+<div class="quiz"><h4>✔ Check Your Understanding</h4>
+<ol>
+<li>Why is machine language "highly efficient" yet almost never written by hand?</li>
+<li>In the light-bulb machine, what does the byte sequence <code>00000001 00000100 00000000</code> do?</li>
+<li>Which translator converts assembly to machine code?</li>
+<li>Why is an HLL called "portable" while assembly is not?</li>
+</ol>
+<details><summary>Show answers</summary><div class="dbody">
+<ol>
+<li>Efficient in <em>execution</em> (no translation, total control) but brutally inefficient in <em>human effort</em> — binary patterns are hard to memorise and easy to mistype, as the notes state.</li>
+<li>Turn bulb ON → DIM by 10% → STOP the program.</li>
+<li>The assembler.</li>
+<li>HLL code is compiled/interpreted into whatever machine code each target CPU needs, so the same source runs anywhere; assembly mnemonics map to one specific architecture's instruction set, so the code only works on that architecture.</li>
+</ol>
+</div></details>
+</div>
+</section>
+
+<section class="chapter" id="translators">
+<h2>4 · Language Processors / Translators</h2>
+<p><span class="tag tag-src">From Lecture Notes</span> "A translator takes a program written in a source language as input and converts it into a program in a target language as output." The notes list three types: <strong>compilers, interpreters, assemblers</strong>.</p>
+<div class="note warn"><span class="nt">Careful — the notes are incomplete here</span> The lecture document gives compilers and interpreters the <em>same</em> one-line definition ("convert programs in high-level language to low-level language"). That is true but hides the crucial difference. The clarification below supplies it.</div>
+<div class="twrap"><table>
+<tr><th>Translator</th><th>Input → Output</th><th>How it works</th><th>When errors appear</th><th>Result</th></tr>
+<tr><td><strong>Compiler</strong></td><td>High-level → low-level (machine/assembly)</td><td>Translates the <em>entire program at once</em>, before execution</td><td>At compile time, before running</td><td>A standalone executable file you can run repeatedly</td></tr>
+<tr><td><strong>Interpreter</strong></td><td>High-level → executed actions</td><td>Translates and executes <em>line by line, every time</em> the program runs</td><td>At run time, when the bad line is reached</td><td>No separate executable; needs the interpreter present</td></tr>
+<tr><td><strong>Assembler</strong></td><td>Assembly → machine code</td><td>Replaces each mnemonic with its binary encoding, resolves labels to addresses</td><td>At assembly time</td><td>Object/machine code file</td></tr>
+</table></div>
+<p><span class="tag tag-clar">Clarification</span> Analogy: a <em>compiler</em> is like translating an entire book in advance and handing over the translated book; an <em>interpreter</em> is like a live translator whispering sentence-by-sentence during a speech; an <em>assembler</em> is like a stenographer converting shorthand to longhand — nearly mechanical, because assembly and machine code correspond almost 1:1.</p>
+<div class="flow">
+<div class="fbox">C source code</div><div class="farrow">↓ <b>compiler</b> (whole program at once)</div>
+<div class="fbox">Assembly code</div><div class="farrow">↓ <b>assembler</b> (mnemonic → binary)</div>
+<div class="fbox">Machine code (executable)</div><div class="farrow">↓ loader places it in memory</div>
+<div class="fbox">CPU executes it</div>
+</div>
+<div class="note key"><span class="nt">Key Idea</span> Interpreters skip the middle: they read one HLL statement, execute its effect immediately, and move on — no saved machine-code file. That is why interpreted programs are usually slower but easier to test interactively.</div>
+</section>
+
+<section class="chapter" id="assembly">
+<h2>5 · Assembly Language from Zero</h2>
+<p><span class="tag tag-src">From Lecture Notes</span> The notes describe assembly language instructions as "a human-readable, symbolic representation of the machine instructions that a processor can execute," using <em>mnemonics</em> (abbreviations) for operations and operands, corresponding directly to the processor's instruction set. Each assembly instruction typically specifies <em>an operation and one or more operands</em>.</p>
+
+<h3>5.1 Why does assembly exist?</h3>
+<p><span class="tag tag-clar">Clarification</span> Because humans are bad at binary but sometimes need machine-level control. Assembly keeps the full power of machine code (every instruction is available) while replacing bit patterns with memorable names. You write assembly when you must control the hardware exactly: operating-system kernels, device drivers, microcontroller firmware, boot code, and performance-critical inner loops.</p>
+
+<h3>5.2 The fields of an assembly line (rules from the notes)</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> Each line of an assembly program is arranged in three columns called <strong>fields</strong>:</p>
+<div class="twrap"><table>
+<tr><th>Field</th><th>Rule (lecture notes)</th><th>Example</th></tr>
+<tr><td><strong>Label field</strong></td><td>May be empty, or specifies a <em>symbolic address</em>: 1–3 alphanumeric characters, first must be a letter, terminated by a comma/colon so the assembler recognises it as a label.</td><td><code>LOOP:</code></td></tr>
+<tr><td><strong>Instruction field</strong></td><td>Specifies a machine instruction or a <em>pseudo-instruction</em> (a directive to the assembler).</td><td><code>MOV AX, 10</code></td></tr>
+<tr><td><strong>Comment field</strong></td><td>May be empty, or include a comment (begins with <code>;</code> in x86/8085 style).</td><td><code>; set counter to 10</code></td></tr>
+</table></div>
+<p><span class="tag tag-clar">Clarification</span> A <em>symbolic address</em> (label) is a human-chosen name for a memory location. When you write <code>JMP LOOP</code>, you do not need to know that LOOP lives at address 0142H — the assembler computes that number and substitutes it during assembly. Labels exist because real addresses shift every time you add or remove a line of code.</p>
+
+<h3>5.3 The four components of assembly instructions</h3>
+<p><span class="tag tag-src">From Lecture Notes</span></p>
+<div class="twrap"><table>
+<tr><th>Component</th><th>What it is</th><th>Example</th></tr>
+<tr><td><strong>Mnemonic (opcode)</strong></td><td>Short symbolic name for the operation</td><td><code>ADD</code>, <code>MOV</code>, <code>JMP</code></td></tr>
+<tr><td><strong>Operands</strong></td><td>The data or addresses the operation uses (registers, memory locations, immediate values)</td><td><code>AX</code>, <code>BX</code>, <code>10</code></td></tr>
+<tr><td><strong>Labels</strong></td><td>Symbolic names for memory addresses / instruction locations</td><td><code>LOOP:</code></td></tr>
+<tr><td><strong>Directives</strong></td><td>Commands to the <em>assembler</em> (not executed by the CPU) — e.g., reserve memory, define constants, mark sections</td><td><code>DB</code>, <code>ORG</code>, <code>END</code></td></tr>
+</table></div>
+<div class="note warn"><span class="nt">Common Confusion</span> A <strong>directive</strong> looks like an instruction but produces <em>no machine code that runs</em>. <code>ORG 100H</code> tells the assembler "place the following code at address 100H" — it changes where bytes go, it does not make the CPU do anything at run time. An <strong>instruction</strong> becomes bits the CPU executes; a <strong>directive</strong> steers the assembler.</div>
+
+<h3>5.4 The lecture's example — dissected completely</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> The notes give this three-line program. Do not skim it — we will take it apart piece by piece.</p>
+<pre><code><span class="lbl">LOOP:</span> <span class="m">MOV</span> AX, <span class="n">10</span>   <span class="c">; Move the immediate value 10 into the AX register</span>
+      <span class="m">ADD</span> AX, BX   <span class="c">; Add the value in register BX to the value in register AX</span>
+      <span class="m">JMP</span> <span class="lbl">LOOP</span>     <span class="c">; Jump to the label "LOOP"</span></code></pre>
+
+<h4>Line 1: <code>LOOP: MOV AX, 10</code></h4>
+<ul>
+<li><strong>Components:</strong> label <code>LOOP</code> + mnemonic <code>MOV</code> + destination operand <code>AX</code> + source operand <code>10</code> (an <em>immediate</em> value — the number itself, not an address).</li>
+<li><strong>Mnemonic:</strong> <code>MOV</code> = "move" (really <em>copy</em>: the source keeps its value).</li>
+<li><strong>Operands:</strong> <code>AX</code> is a 16-bit general-purpose register inside the x86 CPU — think of it as one of the CPU's hands. <code>10</code> is the decimal constant ten.</li>
+<li><strong>Convention (x86):</strong> the <em>first</em> operand is the destination, the <em>second</em> is the source: <code>MOV destination, source</code>.</li>
+<li><strong>Before:</strong> AX = unknown (say <code>0000H</code>).</li>
+<li><strong>After:</strong> AX = <code>000AH</code> (10 decimal = 0A hex). Nothing else changes.</li>
+</ul>
+<h4>Line 2: <code>ADD AX, BX</code></h4>
+<ul>
+<li><strong>Components:</strong> mnemonic <code>ADD</code> + destination <code>AX</code> + source <code>BX</code> (a second 16-bit register).</li>
+<li><strong>Meaning:</strong> <code>AX ← AX + BX</code>. The old value of AX is replaced by the sum; BX is unchanged.</li>
+<li><strong>Before:</strong> AX = <code>000AH</code>, BX = (say) <code>0005H</code>.</li>
+<li><strong>After:</strong> AX = <code>000FH</code> (15), BX = <code>0005H</code> still. The FLAGS register also updates (Section 13).</li>
+</ul>
+<h4>Line 3: <code>JMP LOOP</code></h4>
+<ul>
+<li><strong>Components:</strong> mnemonic <code>JMP</code> + one operand, the label <code>LOOP</code>.</li>
+<li><strong>Meaning:</strong> <em>unconditional jump</em> — instead of continuing to the next line, the CPU loads the Program Counter with the address that <code>LOOP</code> stands for. Execution resumes at line 1.</li>
+<li><strong>Effect:</strong> this three-line program is an <em>infinite loop</em>: AX is reset to 10, BX is added, jump back, forever. (As a teaching example it shows labels and jumps; a real program would include an exit condition.)</li>
+</ul>
+<div class="twrap"><table class="state-table">
+<tr><th>Step</th><th>Instruction</th><th>AX after</th><th>BX after</th><th>PC points to (next)</th></tr>
+<tr><td>start</td><td>—</td><td>0000H</td><td>0005H</td><td>LOOP</td></tr>
+<tr><td>1</td><td>MOV AX, 10</td><td>000AH</td><td>0005H</td><td>line 2</td></tr>
+<tr><td>2</td><td>ADD AX, BX</td><td>000FH</td><td>0005H</td><td>line 3</td></tr>
+<tr><td>3</td><td>JMP LOOP</td><td>000FH</td><td>0005H</td><td>LOOP (line 1)</td></tr>
+<tr><td>4</td><td>MOV AX, 10</td><td>000AH</td><td>0005H</td><td>line 2 …</td></tr>
+</table></div>
+
+<h3>5.5 Why use assembly language? (from the notes)</h3>
+<p><span class="tag tag-src">From Lecture Notes</span></p>
+<ul>
+<li><strong>Control over hardware</strong> — fine-grained control, letting programmers optimise performance or implement specific hardware features.</li>
+<li><strong>Debugging</strong> — easier to debug because it corresponds directly to machine instructions.</li>
+<li><strong>Understanding computer architecture</strong> — studying assembly teaches how computers work at a low level.</li>
+</ul>
+<h3>5.6 Advantages and disadvantages (from the notes)</h3>
+<div class="cmp2">
+<div class="col"><h5>Advantages</h5><ul>
+<li>Precise control over hardware → increased code optimisation.</li>
+<li>Direct access to hardware components like registers → tailored solutions for hardware issues.</li>
+<li>Efficient resource utilisation (low-level control, optimised code, resource awareness, customisation).</li>
+<li>Ideal for microcontrollers, sensors and other hardware components.</li>
+<li>Used in security research: finding vulnerabilities, reverse engineering.</li>
+<li>Essential for operating systems, kernels and device controllers that require hardware interaction.</li>
+</ul></div>
+<div class="col"><h5>Disadvantages</h5><ul>
+<li>Complex and very hard to learn, especially for beginners.</li>
+<li>Highly machine-dependent → limits portability.</li>
+<li>Hard to maintain, especially in large-scale projects.</li>
+<li>Very time-consuming: hard to understand, very long code.</li>
+<li>Debugging is challenging.</li>
+</ul></div>
+</div>
+<div class="note key"><span class="nt">Key Idea</span> Assembly trades <em>programmer time</em> for <em>machine control</em>. High-level languages trade a little machine efficiency for enormous programmer productivity. Neither is "better" — they serve different jobs.</div>
+</section>
+
+<section class="chapter" id="machine-instructions">
+<h2>6 · Machine Language &amp; Machine Instructions</h2>
+<h3>6.1 How a machine executes without understanding</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> The notes make a deep point worth reading slowly: "A computer executes machine language programs <em>mechanically</em> — without understanding them or thinking about them — simply because of the way it is physically put together." A computer is built of millions of tiny switches called <strong>transistors</strong>, wired so that the output of one switch can turn another on or off. As the computer computes, these switches flip each other in a pattern determined by (a) the wiring and (b) the program being executed. Machine instructions are expressed as <strong>binary numbers</strong>; each particular sequence of zeros and ones encodes one particular instruction. Data is encoded the same way, because switches readily represent two states: on = 1, off = 0.</p>
+<div class="note key"><span class="nt">Key Idea</span> There is no "reader" inside the CPU that understands your program. Decode-and-execute is a <em>physical cascade</em>: the bits of the instruction energise specific wires, and the wiring makes the right thing happen. This is why the <em>encoding</em> (instruction format) matters so much — the bit positions themselves are the control signals' source.</div>
+
+<h3>6.2 What is a machine instruction?</h3>
+<p><span class="tag tag-src">From Lecture Notes</span></p>
+<ul>
+<li>Machine instructions are commands written in the machine code of a machine that it can recognise and execute.</li>
+<li>A machine instruction consists of <strong>several bytes in memory</strong> that tell the processor to perform <strong>one machine operation</strong>.</li>
+<li>The processor looks at machine instructions in main memory <strong>one after another</strong>, performing one machine operation per instruction.</li>
+<li>The collection of machine instructions in main memory is called a <strong>machine language program</strong>.</li>
+<li>Each instruction performs a very specific task: a load, a jump, or an ALU operation on data in a register or memory. <em>Every</em> program directly executed by a CPU is made of a series of such instructions.</li>
+</ul>
+
+<h3>6.3 General format of a machine instruction (assembly view)</h3>
+<p><span class="tag tag-src">From Lecture Notes</span></p>
+<pre><code>[Label:]   Mnemonic [Operand, Operand]   [;comments]</code></pre>
+<ul>
+<li>Brackets indicate a field is <strong>optional</strong>.</li>
+<li><strong>Mnemonic</strong> is the symbol for the instruction's operation code.</li>
+<li><strong>Label</strong> is an identifier assigned the address of the first byte of the instruction in which it appears; it must be followed by "<code>:</code>".</li>
+<li>Spacing is arbitrary, except that <em>at least one space</em> must be inserted — no space would create ambiguity.</li>
+<li>The comment field begins with a semicolon (<code>;</code>).</li>
+</ul>
+
+<h3>6.4 The lecture's machine-code example, decoded</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> The notes show two x86 instructions as raw bytes alongside their assembly:</p>
+<pre><code><span class="n">B8 05 00</span>    <span class="c">; MOV AX, 05H</span>
+<span class="n">05 03 00</span>    <span class="c">; ADD AX, 03H</span></code></pre>
+<p><span class="tag tag-clar">Clarification</span> Let us read these bytes the way the CPU does:</p>
+<div class="twrap"><table>
+<tr><th>Byte(s)</th><th>Binary</th><th>What the CPU sees</th></tr>
+<tr><td><code>B8</code></td><td><code>1011 1000</code></td><td>Opcode: "load a 16-bit immediate value into register AX" (on x86, <code>B8</code> = MOV AX, imm16).</td></tr>
+<tr><td><code>05 00</code></td><td><code>00000101 00000000</code></td><td>The 16-bit value itself, stored <em>low byte first</em> (little-endian): value = <code>0005H</code> = 5.</td></tr>
+<tr><td><code>05</code></td><td><code>0000 0101</code></td><td>Opcode: "ADD a 16-bit immediate value to AX".</td></tr>
+<tr><td><code>03 00</code></td><td><code>00000011 00000000</code></td><td>The value <code>0003H</code> = 3, again low byte first.</td></tr>
+</table></div>
+<p>So the six bytes <code>B8 05 00 05 03 00</code> sitting in memory are a complete two-instruction program: <em>set AX to 5, then add 3 to AX</em> (AX ends at 8). Notice how the CPU knows where one instruction ends and the next begins: the opcode byte <code>B8</code> <em>implies</em> "two more bytes follow," because the instruction format for that opcode is fixed. Instruction formats are the whole subject of Sections 17–19.</p>
+<div class="note warn"><span class="nt">Note on the notes</span> The lecture writes the comment as <code>MOV AX, 05H</code>. Strictly, <code>B8 05 00</code> encodes <code>MOV AX, 0005H</code> — a 16-bit immediate stored little-endian. The intent is identical (load 5 into AX); the byte-order detail is a clarification, not a contradiction.</div>
+
+<h3>6.5 A fictional CPU before real ones</h3>
+<p><span class="tag tag-clar">Clarification</span> To see encoding without x86's complexity, invent a toy CPU with an 8-bit instruction: 3 bits of opcode, 1 bit unused (0), 4 bits of operand:</p>
+<div class="bits">
+<div class="bf opc"><b>Opcode</b><span class="rng">bits 7–5</span></div>
+<div class="bf"><b>0</b><span class="rng">bit 4</span></div>
+<div class="bf adr"><b>Operand</b><span class="rng">bits 3–0</span></div>
+</div>
+<div class="twrap"><table>
+<tr><th>Opcode</th><th>Meaning</th><th>Example encoding</th><th>Assembly</th></tr>
+<tr><td><code>001</code></td><td>LOAD accumulator from memory address</td><td><code>0010 0101</code></td><td><code>LOAD 5</code></td></tr>
+<tr><td><code>010</code></td><td>ADD memory value to accumulator</td><td><code>0100 0111</code></td><td><code>ADD 7</code></td></tr>
+<tr><td><code>011</code></td><td>STORE accumulator to memory address</td><td><code>0110 1000</code></td><td><code>STORE 8</code></td></tr>
+<tr><td><code>111</code></td><td>HALT</td><td><code>1110 0000</code></td><td><code>HLT</code></td></tr>
+</table></div>
+<p>The program <code>0010 0101 · 0100 0111 · 0110 1000 · 1110 0000</code> loads memory cell 5 into the accumulator, adds memory cell 7, stores the result in cell 8, and halts. Real ISAs are exactly this idea with more bits and more opcodes. Hold onto this picture: <strong>bit positions are fields, fields have meanings, and the decoder hardware is built around those meanings</strong>.</p>
+
+<div class="quiz"><h4>✔ Check Your Understanding</h4>
+<ol>
+<li>What two things determine the pattern in which a computer's transistors switch?</li>
+<li>In <code>B8 05 00</code>, which byte is the opcode and which bytes are the operand?</li>
+<li>Why does the CPU not get confused about where one instruction ends and the next begins?</li>
+<li>Using the toy CPU above, encode "ADD 3" and "HALT".</li>
+</ol>
+<details><summary>Show answers</summary><div class="dbody">
+<ol>
+<li>(a) How the transistors are wired together, and (b) the program being executed.</li>
+<li><code>B8</code> is the opcode; <code>05 00</code> is the 16-bit operand (value 0005H, little-endian).</li>
+<li>Because each opcode's format tells the decoder how many bytes belong to that instruction.</li>
+<li>ADD 3 = <code>0100 0011</code>; HALT = <code>1110 0000</code>.</li>
+</ol>
+</div></details>
+</div>
+</section>
+
+<section class="chapter" id="cpu-execution">
+<h2>7 · How the CPU Executes an Instruction</h2>
+<p><span class="tag tag-src">From Lecture Notes</span> The notes describe program execution like this: the CPU contains a special register — the <strong>instruction register (IR)</strong> — whose bit pattern determines what the CPU does. Since instructions are simply bit patterns, they can be kept in memory. The <strong>instruction pointer</strong> (program counter) always holds the memory address of the <em>next</em> instruction to be executed. The notes then give the complete fetch-execute sequence:</p>
+<div class="note def"><span class="nt">The 8-step execution sequence (Lecture 1.3.1)</span>
+<ol>
+<li>A sequence of instructions is stored in memory.</li>
+<li>The memory address where the first instruction is found is copied to the instruction pointer (PC).</li>
+<li>The CPU sends the address in the instruction pointer to memory on the <strong>address bus</strong>.</li>
+<li>The CPU sends a "read" signal on the <strong>control bus</strong>.</li>
+<li>Memory responds by sending a copy of the bits at that location on the <strong>data bus</strong>, which the CPU copies into its <strong>instruction register</strong>.</li>
+<li>The instruction pointer is automatically <strong>incremented</strong> to contain the address of the next instruction in memory.</li>
+<li>The CPU <strong>executes</strong> the instruction in the instruction register.</li>
+<li>Go to step 3.</li>
+</ol>
+Steps 3, 4 and 5 are called an <strong>instruction fetch</strong>. Steps 3–8 constitute the <strong>instruction execution cycle</strong>.</div>
+
+<h3>7.1 The three buses — what each wire bundle does</h3>
+<p><span class="tag tag-clar">Clarification</span> The steps mention three "buses." A <strong>bus</strong> is a bundle of parallel wires connecting CPU and memory (and I/O). Each bus has one job:</p>
+<div class="twrap"><table>
+<tr><th>Bus</th><th>Direction</th><th>Carries</th><th>Analogy</th></tr>
+<tr><td><strong>Address bus</strong></td><td>CPU → memory (one way)</td><td>The <em>number of the mailbox</em> the CPU wants</td><td>You telling the librarian a shelf number</td></tr>
+<tr><td><strong>Control bus</strong></td><td>Both ways</td><td>Commands and status: "read", "write", interrupts</td><td>You saying "I want to <em>borrow</em>, not donate"</td></tr>
+<tr><td><strong>Data bus</strong></td><td>Both ways</td><td>The actual contents (instruction or data)</td><td>The book itself travelling back</td></tr>
+</table></div>
+
+<figure class="svgbox">
+<svg viewBox="0 0 760 330" width="100%" style="max-width:760px" role="img" aria-label="CPU and memory connected by address, control and data buses">
+<defs><marker id="ar" markerWidth="9" markerHeight="9" refX="7" refY="4.5" orient="auto"><path d="M0,0 L8,4.5 L0,9 z" fill="#2563eb"/></marker></defs>
+<rect x="30" y="30" width="260" height="270" rx="12" fill="#eff6ff" stroke="#1b2a4a" stroke-width="2"/>
+<text x="160" y="55" text-anchor="middle" font-weight="bold" font-size="15" fill="#1b2a4a">CPU</text>
+<rect x="55" y="70" width="210" height="34" rx="6" fill="#fff" stroke="#2563eb"/><text x="160" y="91" text-anchor="middle" font-size="12">PC / IP — address of next instruction</text>
+<rect x="55" y="112" width="210" height="34" rx="6" fill="#fff" stroke="#2563eb"/><text x="160" y="133" text-anchor="middle" font-size="12">IR — instruction being executed</text>
+<rect x="55" y="154" width="210" height="34" rx="6" fill="#fff" stroke="#2563eb"/><text x="160" y="175" text-anchor="middle" font-size="12">Control Unit (decoder)</text>
+<rect x="55" y="196" width="210" height="34" rx="6" fill="#fff" stroke="#2563eb"/><text x="160" y="217" text-anchor="middle" font-size="12">ALU + general registers</text>
+<rect x="55" y="238" width="210" height="34" rx="6" fill="#fff" stroke="#2563eb"/><text x="160" y="259" text-anchor="middle" font-size="12">FLAGS (Z, S, O, C)</text>
+<rect x="500" y="30" width="230" height="270" rx="12" fill="#ecfdf5" stroke="#1b2a4a" stroke-width="2"/>
+<text x="615" y="55" text-anchor="middle" font-weight="bold" font-size="15" fill="#1b2a4a">MEMORY</text>
+<rect x="520" y="70" width="190" height="30" rx="4" fill="#fff" stroke="#0f766e"/><text x="615" y="89" text-anchor="middle" font-size="11">addr 1000: instruction 1</text>
+<rect x="520" y="106" width="190" height="30" rx="4" fill="#fff" stroke="#0f766e"/><text x="615" y="125" text-anchor="middle" font-size="11">addr 1002: instruction 2</text>
+<rect x="520" y="142" width="190" height="30" rx="4" fill="#fff" stroke="#0f766e"/><text x="615" y="161" text-anchor="middle" font-size="11">addr 1004: instruction 3</text>
+<rect x="520" y="178" width="190" height="30" rx="4" fill="#fff" stroke="#0f766e"/><text x="615" y="197" text-anchor="middle" font-size="11">… data cells …</text>
+<line x1="290" y1="120" x2="498" y2="120" stroke="#2563eb" stroke-width="3" marker-end="url(#ar)"/>
+<text x="394" y="110" text-anchor="middle" font-size="12" font-weight="bold" fill="#2563eb">ADDRESS BUS</text>
+<text x="394" y="136" text-anchor="middle" font-size="10" fill="#5b6472">CPU sends address (step 3)</text>
+<line x1="290" y1="185" x2="498" y2="185" stroke="#92400e" stroke-width="3" marker-end="url(#ar)"/>
+<text x="394" y="175" text-anchor="middle" font-size="12" font-weight="bold" fill="#92400e">CONTROL BUS</text>
+<text x="394" y="201" text-anchor="middle" font-size="10" fill="#5b6472">"read" signal (step 4)</text>
+<line x1="498" y1="250" x2="290" y2="250" stroke="#0f766e" stroke-width="3" marker-end="url(#ar)"/>
+<text x="394" y="240" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f766e">DATA BUS</text>
+<text x="394" y="266" text-anchor="middle" font-size="10" fill="#5b6472">memory sends instruction bits → IR (step 5)</text>
+</svg>
+<figcaption>Fig 7.1 — One instruction fetch travels across all three buses. The address bus selects the cell, the control bus says "read", the data bus carries the bits back into the IR.</figcaption>
+</figure>
+
+<h3>7.2 The full journey, stage by stage</h3>
+<div class="flow">
+<div class="fbox">PC holds address of next instruction<span class="sm">e.g. PC = 1000H</span></div>
+<div class="farrow">↓</div>
+<div class="fbox">Address placed on ADDRESS BUS<span class="sm">memory now knows which cell is wanted</span></div>
+<div class="farrow">↓</div>
+<div class="fbox">"READ" signalled on CONTROL BUS<span class="sm">memory prepares to output, not overwrite</span></div>
+<div class="farrow">↓</div>
+<div class="fbox">MEMORY places cell contents on DATA BUS<span class="sm">the instruction's bits travel to the CPU</span></div>
+<div class="farrow">↓</div>
+<div class="fbox">Bits latched into the INSTRUCTION REGISTER<span class="sm">FETCH complete; PC is incremented</span></div>
+<div class="farrow">↓</div>
+<div class="fbox">DECODE — Control Unit reads the opcode field<span class="sm">"which operation? which operands? which addressing mode?"</span></div>
+<div class="farrow">↓</div>
+<div class="fbox">EXECUTE — control signals drive ALU / registers / memory<span class="sm">the actual work happens; flags may update</span></div>
+<div class="farrow">↓</div>
+<div class="fbox">Result written back (register or memory)</div>
+<div class="loop">↺ repeat with the next instruction (PC already points to it)</div>
+</div>
+<div class="note key"><span class="nt">Key Idea</span> Notice when the PC increments: <em>during fetch</em>, before the instruction even executes. That is why the PC always points to the <em>next</em> instruction — and why a jump instruction works by simply <em>overwriting</em> the PC during execute.</div>
+<div class="note warn"><span class="nt">Note on the notes</span> The lecture text contains a garbled sentence: "the central processor unit can perform the operation <em>nominative</em> by this next bit pattern." The intended meaning (from the standard source this passage is adapted from) is "the operation <em>indicated/nominated</em> by the next bit pattern" — i.e., whatever bit pattern lands in the IR determines the CPU's next action. Similarly, "the address wherever the first instruction is found" means "wherever" → "where".</div>
+</section>
+
+<section class="chapter" id="machine-cycle">
+<h2>8 · T-States, Bus Cycles, Machine Cycles &amp; Instruction Cycles</h2>
+<p><span class="tag tag-src">From Lecture Notes</span> <span class="tag tag-clar">Clarification</span> The notes introduce three timing terms and four numerical problems. These terms are famously confusing because they are <em>nested</em> — each is built from the previous one. Let us build the hierarchy from the bottom up.</p>
+
+<h3>8.1 The clock and the T-state</h3>
+<p>Every CPU has a <strong>clock</strong>: an electronic metronome producing a steady square wave — tick, tick, tick — billions of times per second. Nothing inside the CPU happens "whenever"; every action starts on a clock tick.</p>
+<ul>
+<li><strong>Clock frequency</strong> — how many ticks per second, in Hertz (Hz). 1 MHz = 1,000,000 ticks/second; 1 GHz = 10<sup>9</sup> ticks/second.</li>
+<li><strong>Clock period</strong> — the duration of <em>one</em> tick = 1 / frequency.</li>
+<li><strong>T-state</strong> (<span class="tag tag-src">From Lecture Notes</span> terminology, standard in 8085 courses) — <em>one clock period</em>. A T-state is the smallest unit of CPU time: the time between two successive clock ticks.</li>
+</ul>
+<div class="formula-box"><span class="fm">T-state time = 1 ÷ clock frequency</span>
+<div class="fexp">Units: frequency in Hz → time in seconds. Example: 2 MHz → 1 / 2,000,000 s = 0.5 µs (microseconds). Remember: 1 ms = 10⁻³ s, 1 µs = 10⁻⁶ s, 1 ns = 10⁻⁹ s.</div></div>
+
+<h3>8.2 Bus cycle</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> "The <strong>bus cycle</strong> is the cycle or time required to make a <em>single read or write transaction</em> between the CPU and an external device such as external memory." One bus cycle = one handshake across the buses: address out, control signal out, data across. A bus cycle takes several T-states (on the 8085, typically 3 T-states minimum; extra <em>wait states</em> can be inserted if the memory is slow).</p>
+
+<h3>8.3 Machine cycle</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> "The <strong>machine cycle</strong> is the number of cycles needed to do either a <em>fetch, read or write</em> operation. The read or write may be more than a single bus cycle if the transaction between the CPU and memory is longer than the data width fetched or written."</p>
+<p>The notes' example: on an 8085 the data bus is 8 bits wide. If the CPU must fetch or write <em>16 bits</em> of data, that needs <strong>two bus cycles</strong> (two 8-bit transfers) but counts as <strong>one machine cycle</strong>, because it is one logical 16-bit operation using a 16-bit register.</p>
+<p><span class="tag tag-clar">Clarification</span> Named machine cycles you will meet: <strong>opcode fetch</strong> (reading the instruction's first byte), <strong>memory read</strong>, <strong>memory write</strong>, <strong>I/O read</strong>, <strong>I/O write</strong>. An instruction like "load accumulator from memory" needs at least two machine cycles: one to fetch the instruction, one to read the data.</p>
+
+<h3>8.4 Instruction cycle</h3>
+<p>The <strong>instruction cycle</strong> is the total time to fetch <em>and execute</em> one complete instruction — it is made of one or more machine cycles. (Section 11 studies its stages in detail.)</p>
+
+<h3>8.5 The hierarchy, side by side</h3>
+<div class="twrap"><table>
+<tr><th>Unit</th><th>Definition</th><th>Made of</th><th>Typical size (2 MHz 8085)</th></tr>
+<tr><td><strong>T-state</strong> (= clock cycle)</td><td>One clock period; smallest CPU time unit</td><td>1 clock tick</td><td>0.5 µs</td></tr>
+<tr><td><strong>Bus cycle</strong></td><td>One read/write transaction with an external device</td><td>≥ 3 T-states (+ wait states)</td><td>≥ 1.5 µs</td></tr>
+<tr><td><strong>Machine cycle</strong></td><td>One fetch / read / write <em>operation</em></td><td>1 or more bus cycles</td><td>3–6 T-states → 1.5–3 µs</td></tr>
+<tr><td><strong>Instruction cycle</strong></td><td>Fetch + execute one whole instruction</td><td>1 or more machine cycles</td><td>4–18+ T-states → 2–9 µs</td></tr>
+</table></div>
+<div class="flow">
+<div class="fbox">INSTRUCTION CYCLE<span class="sm">= machine cycle + machine cycle + …</span></div>
+<div class="farrow">↓ contains</div>
+<div class="fbox">MACHINE CYCLE (opcode fetch / mem read / mem write)<span class="sm">= bus cycle (+ extra bus cycle if data wider than bus)</span></div>
+<div class="farrow">↓ contains</div>
+<div class="fbox">BUS CYCLE<span class="sm">= several T-states (+ wait states)</span></div>
+<div class="farrow">↓ contains</div>
+<div class="fbox">T-STATE = one clock period = 1 / frequency</div>
+</div>
+<div class="note mistake"><span class="nt">Common Mistake</span> "T-state" and "clock cycle" are <em>the same thing</em> (one clock period). But a <em>machine cycle</em> is NOT one clock cycle — it is several. And a bus cycle is a transaction, not a tick. Exams love asking you to rank these by size: T-state &lt; bus cycle ≤ machine cycle ≤ instruction cycle.</div>
+
+<h3>8.6 The lecture's four numerical problems — fully worked</h3>
+
+<div class="prob"><h4>Problem Q1 <span class="tag tag-src">From Lecture Notes</span></h4>
+<p><em>A microprocessor takes 4 T-states to complete a machine cycle. The clock frequency is 2 MHz. How much time does one machine cycle take?</em></p>
+<div class="step"><b>Given:</b> 1 machine cycle = 4 T-states; clock frequency f = 2 MHz = 2,000,000 Hz.</div>
+<div class="step"><b>Required:</b> time of one machine cycle.</div>
+<div class="step"><b>Formula:</b> T-state = 1 / f; machine-cycle time = (number of T-states) × (T-state time).</div>
+<div class="step"><b>Substitution:</b> T-state = 1 / 2,000,000 s = 0.0000005 s = 0.5 µs.</div>
+<div class="step"><b>Calculation:</b> 4 × 0.5 µs = 2 µs.</div>
+<div class="step"><b>Final answer:</b> <mark>One machine cycle takes 2 µs.</mark></div>
+<div class="step"><b>Why this works:</b> The clock is the metronome; every T-state lasts exactly one tick. Four ticks at half a microsecond each give two microseconds. We convert Hz → seconds first because Hz literally means "ticks per second".</div>
+</div>
+
+<div class="prob"><h4>Problem Q2 <span class="tag tag-src">From Lecture Notes</span></h4>
+<p><em>An instruction requires 3 machine cycles: opcode fetch (4 T-states), memory read (3 T-states), and memory write (3 T-states). How many total bus cycles and T-states are needed to execute this instruction?</em></p>
+<div class="step"><b>Given:</b> 3 machine cycles — opcode fetch (4 T), memory read (3 T), memory write (3 T); each machine cycle here is a single bus transaction.</div>
+<div class="step"><b>Required:</b> total bus cycles; total T-states.</div>
+<div class="step"><b>Formula:</b> totals = sum of the parts.</div>
+<div class="step"><b>Calculation:</b> Total bus cycles = 3 (one per machine cycle). Total T-states = 4 + 3 + 3 = 10.</div>
+<div class="step"><b>Final answer:</b> <mark>3 bus cycles; 10 T-states.</mark></div>
+<div class="step"><b>Why this works:</b> Each of the three machine cycles performs exactly one external transaction (fetch the opcode, read data, write data), so bus cycles = machine cycles = 3 here. The T-states simply add because the operations happen one after another in time. (If one machine cycle had needed two 8-bit transfers, bus cycles would exceed machine cycles — see Section 8.3.)</div>
+</div>
+
+<div class="prob"><h4>Problem Q3 <span class="tag tag-src">From Lecture Notes</span></h4>
+<p><em>A memory read operation takes 3 T-states and there are 2 wait states inserted, and the clock period is 1 µs. What is the total time for this bus cycle?</em></p>
+<div class="step"><b>Given:</b> normal read = 3 T-states; wait states = 2; clock period (1 T-state) = 1 µs.</div>
+<div class="step"><b>Required:</b> total bus-cycle time.</div>
+<div class="step"><b>Formula:</b> total T-states = normal + wait states; time = total T-states × clock period.</div>
+<div class="step"><b>Substitution:</b> total T-states = 3 + 2 = 5.</div>
+<div class="step"><b>Calculation:</b> 5 × 1 µs = 5 µs.</div>
+<div class="step"><b>Final answer:</b> <mark>5 µs.</mark></div>
+<div class="step"><b>Why this works:</b> A <em>wait state</em> is an extra clock tick the CPU inserts to give slow memory time to respond. Each wait state adds exactly one T-state, so 2 wait states stretch a 3-T-state read to 5 T-states.</div>
+</div>
+
+<div class="prob"><h4>Problem Q4 <span class="tag tag-src">From Lecture Notes</span></h4>
+<p><em>A CPU executes an instruction in 16 T-states. If the instruction takes 8 microseconds to complete, what is the clock frequency?</em></p>
+<div class="step"><b>Given:</b> instruction = 16 T-states; total time = 8 µs.</div>
+<div class="step"><b>Required:</b> clock frequency f.</div>
+<div class="step"><b>Formula:</b> T-state time = total time ÷ T-states; f = 1 / T-state time.</div>
+<div class="step"><b>Substitution:</b> T-state = 8 µs / 16 = 0.5 µs = 0.5 × 10⁻⁶ s.</div>
+<div class="step"><b>Calculation:</b> f = 1 / (0.5 × 10⁻⁶) = 2 × 10⁶ Hz = 2 MHz.</div>
+<div class="step"><b>Final answer:</b> <mark>Clock frequency = 2 MHz.</mark></div>
+<div class="step"><b>Why this works:</b> Frequency and period are reciprocals. We first find how long one tick lasts (divide total time evenly among 16 ticks), then flip it to get ticks-per-second. Watch the units: 0.5 µs must be written as 0.5 × 10⁻⁶ s before taking the reciprocal, or the answer comes out wrong by a factor of a million.</div>
+</div>
+
+<p>Five additional practice problems (increasing difficulty) with full solutions are in <a href="#problems">Section 20 · Problem Solving</a>.</p>
+
+<div class="quiz"><h4>✔ Check Your Understanding</h4>
+<ol>
+<li>Rank by duration: machine cycle, T-state, instruction cycle, bus cycle.</li>
+<li>Why can one machine cycle contain two bus cycles on an 8085?</li>
+<li>What is a wait state and why is it inserted?</li>
+<li>At 4 MHz, how long is one T-state?</li>
+</ol>
+<details><summary>Show answers</summary><div class="dbody">
+<ol>
+<li>T-state &lt; bus cycle ≤ machine cycle ≤ instruction cycle.</li>
+<li>The 8085 data bus is 8 bits wide; a 16-bit read/write needs two 8-bit transfers (two bus cycles) but is logically one machine cycle.</li>
+<li>An extra clock tick inserted into a bus cycle so a slow memory/device has time to respond.</li>
+<li>1 / 4,000,000 s = 0.25 µs = 250 ns.</li>
+</ol>
+</div></details>
+</div>
+</section>
+
+<section class="chapter" id="addressing-intro">
+<h2>9 · Why Addressing Modes Exist <span class="small">(Lecture 1.3.2)</span></h2>
+<p><span class="tag tag-src">From Lecture Notes</span> "The operation field of an instruction specifies the operation to be performed. This operation must be executed on some data stored in computer registers or memory words. The way the operands are chosen during program execution is dependent on the <strong>addressing mode</strong> of the instruction. The addressing mode specifies a <em>rule for interpreting or modifying the address field of the instruction before the operand is actually referenced</em>."</p>
+<p>Computers use addressing modes for two purposes (verbatim from the notes):</p>
+<ol>
+<li>To give <strong>programming versatility</strong> — facilities such as pointers to memory, counters for loop control, indexing of data, and program relocation.</li>
+<li>To <strong>reduce the number of bits</strong> in the address field of the instruction.</li>
+</ol>
+<h3>9.1 The problem, from first principles</h3>
+<p><span class="tag tag-clar">Clarification</span> Recall from Section 0.9 that an instruction contains an opcode plus an operand/address field. Here is the difficulty: the address field is <em>small</em> (say 12 bits, which can name only 2<sup>12</sup> = 4096 memory cells), but real memory is <em>large</em>, and real programs need flexible ways to reach their data — walking through arrays, following pointers, looping, relocating code. If the address field could only ever mean "the literal memory cell with this number," none of those patterns would be practical.</p>
+<p>An <strong>addressing mode</strong> is therefore an agreement between the programmer and the CPU about <em>how to interpret the address field</em>:</p>
+<ul>
+<li>"These bits <em>are</em> the data" (immediate),</li>
+<li>"these bits name a <em>register</em> holding the data" (register),</li>
+<li>"these bits name a register holding the <em>address of</em> the data" (register indirect),</li>
+<li>"these bits are the memory address of the data" (direct),</li>
+<li>"these bits are the address of <em>the address of</em> the data" (indirect),</li>
+<li>"add these bits to a register to get the address" (indexed / relative)…</li>
+</ul>
+<p>Same instruction bits, different interpretation rules, completely different data reached. The mode is signalled either by dedicated mode bits in the instruction or by the opcode itself.</p>
+<div class="note key"><span class="nt">Key Idea</span> An addressing mode answers one question: <strong>"Given the bits in the instruction, where is the actual operand?"</strong> Every mode is just a different recipe for answering it.</div>
+</section>
+
+<section class="chapter" id="effective-address">
+<h2>10 · Effective Address (EA)</h2>
+<p><span class="tag tag-src">From Lecture Notes</span> "The <strong>effective address</strong> refers to the address of the exact memory location in which an operand's value is actually present."</p>
+<h3>10.1 What "effective" means</h3>
+<p><span class="tag tag-clar">Clarification</span> The address field inside the instruction is often <em>not</em> the final address — it may be a displacement, a register number, or a pointer to a pointer. The CPU must <em>compute</em> the real address from those bits. The result of that computation — the address that is <em>effectively</em> used to touch memory — is the effective address. Think of the address field as a clue and the EA as the answer the clue leads to.</p>
+<h3>10.2 EA vs instruction address</h3>
+<p>Do not confuse two different addresses living side by side during execution:</p>
+<ul>
+<li>The <strong>instruction address</strong> — where the <em>instruction itself</em> sits in memory (tracked by the PC).</li>
+<li>The <strong>effective address</strong> — where the instruction's <em>data</em> sits (computed per the addressing mode).</li>
+</ul>
+<h3>10.3 How each mode produces the EA (preview)</h3>
+<div class="twrap"><table>
+<tr><th>Mode</th><th>Recipe for the operand</th><th>Effective address</th></tr>
+<tr><td>Implied</td><td>Operand is fixed by the opcode itself</td><td>None needed (operand is a named register)</td></tr>
+<tr><td>Immediate</td><td>Operand field <em>is</em> the data</td><td>None — no memory access for data</td></tr>
+<tr><td>Register</td><td>Field names a register holding the data</td><td>None — data stays in the register</td></tr>
+<tr><td>Register indirect</td><td>Register holds the address of the data</td><td>EA = contents of register</td></tr>
+<tr><td>Auto-increment/decrement</td><td>Like register indirect, then register ±1</td><td>EA = contents of register (before/after update)</td></tr>
+<tr><td>Direct</td><td>Address field is the data's address</td><td>EA = address field</td></tr>
+<tr><td>Indirect</td><td>Address field points to a cell holding the address</td><td>EA = M[address field]</td></tr>
+<tr><td>Indexed</td><td>Address field + index register</td><td>EA = address field + (index register)</td></tr>
+<tr><td>Relative</td><td>Displacement + program counter</td><td>EA = displacement + (PC)</td></tr>
+</table></div>
+<p>Each mode now gets the full treatment with the same teaching template.</p>
+
+<h3 id="am-implied">10.1 · Implied Mode</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> "In this mode the operands are specified <em>implicitly in the definition of the instruction</em>. For example, the instruction 'complement accumulator' is an implied-mode instruction because the operand in the accumulator register is implied in the definition of the instruction. In fact, all register-reference instructions that use an accumulator are implied-mode instructions."</p>
+<h4>What problem does it solve?</h4>
+<p>Some operations always act on the same register. Why waste bits naming it? Implied mode makes instructions short and fast by hard-wiring the operand into the opcode.</p>
+<h4>How it works &amp; example</h4>
+<pre><code><span class="m">CMA</span>   <span class="c">; Complement Accumulator — flip every bit of AC</span></code></pre>
+<ul>
+<li><strong>Effective address:</strong> none — the operand is the accumulator, named by the opcode itself.</li>
+<li><strong>Before:</strong> AC = <code>0F0FH</code> (<code>0000 1111 0000 1111</code>).</li>
+<li><strong>After:</strong> AC = <code>F0F0H</code> (<code>1111 0000 1111 0000</code>). No memory touched, no operand field needed.</li>
+</ul>
+<h4>Advantages / disadvantages / when useful</h4>
+<ul>
+<li><b>+</b> Shortest possible encoding (opcode only); no operand fetch; very fast.</li>
+<li><b>−</b> Completely inflexible — works only on the one implied register.</li>
+<li><b>Useful for:</b> frequent single-register housekeeping: complement, clear, increment accumulator, halt, no-operation.</li>
+</ul>
+<div class="note warn"><span class="nt">Common Confusion</span> Implied ≠ immediate. <em>Implied</em>: the operand is a fixed register hidden in the opcode. <em>Immediate</em>: the operand is a constant written inside the instruction. Both need no memory access, but for opposite reasons.</div>
+
+<h3 id="am-immediate">10.2 · Immediate Mode</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> "In the immediate mode, we specify the operand <em>in the instruction itself</em>. Instead of an address field, the immediate-mode instruction consists of an <em>operand field</em> containing the actual operand. Immediate-mode instructions help initialise registers to a constant value."</p>
+<h4>What problem does it solve?</h4>
+<p>Programs constantly need constants: loop limits, initial values, masks. Fetching a constant from memory would waste a memory cell and a bus cycle. Immediate mode embeds the constant in the instruction stream.</p>
+<h4>How it works &amp; examples (from the notes)</h4>
+<pre><code><span class="m">MOV</span> A, <span class="n">#55H</span>   <span class="c">; 8051: the '#' marks immediate data — move the value 55H into A</span>
+<span class="m">MVI</span> A, <span class="n">55H</span>    <span class="c">; 8085: Move Immediate (no '#' needed; the opcode implies it)</span></code></pre>
+<ul>
+<li><strong>Effective address:</strong> none — the operand rides inside the instruction. (Formally, the operand's "address" is the location right after the opcode, which is why the PC slides past it.)</li>
+<li><strong>Before:</strong> A = anything. <strong>After:</strong> A = <code>55H</code>. Memory data cells: untouched.</li>
+</ul>
+<h4>Advantages / disadvantages / when useful</h4>
+<ul>
+<li><b>+</b> No extra memory access → fast; perfect for constants.</li>
+<li><b>−</b> The value is frozen at assembly time — you cannot change it at run time; constant size limited by field width.</li>
+<li><b>Useful for:</b> initialising registers/counters, comparing against fixed limits.</li>
+</ul>
+<div class="note warn"><span class="nt">Common Confusion</span> <code>MOV A, #55H</code> (immediate) puts the <em>number</em> 55H into A. <code>MOV A, 55H</code> (direct, next-but-one mode) puts <em>the contents of memory cell 55H</em> into A. One <code>#</code> changes everything.</div>
+
+<h3 id="am-register">10.3 · Register Mode (Register Direct)</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> "In the register mode, the operands exist in registers that reside within the CPU. We select a specific register from a register field in the instruction. A k-bit field can determine one of 2<sup>k</sup> registers."</p>
+<h4>What problem does it solve?</h4>
+<p>Memory is far away; registers are inside the CPU. If the data is already in a register, the instruction should be able to say "use register 3" in 3–4 bits instead of spending 12–32 bits on a memory address — this is the notes' second purpose of addressing modes (fewer bits) in its purest form.</p>
+<h4>How it works &amp; example</h4>
+<pre><code><span class="m">MOV</span> A, B   <span class="c">; copy the contents of register B into register A</span></code></pre>
+<ul>
+<li><strong>Effective address:</strong> none — no memory access at all. The "address" is a register number inside the CPU.</li>
+<li><strong>Before:</strong> A = <code>11H</code>, B = <code>7CH</code>. <strong>After:</strong> A = <code>7CH</code>, B = <code>7CH</code> (copy, not move-and-erase).</li>
+</ul>
+<h4>Advantages / disadvantages / when useful</h4>
+<ul>
+<li><b>+</b> Fastest data access in the machine; tiny address field (k bits select 2<sup>k</sup> registers).</li>
+<li><b>−</b> Only works for data already in registers; registers are scarce.</li>
+<li><b>Useful for:</b> arithmetic on active variables, shuffling values between working registers.</li>
+</ul>
+
+<h3 id="am-reg-indirect">10.4 · Register Indirect Mode</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> "The instruction defines the particular register in the CPU whose <em>contents provide the operand's address in memory</em>. The selected register includes the <em>address of an operand</em> instead of the operand itself. The advantage: the instruction's address field uses <em>fewer bits to select a register</em> than would be required to directly specify a memory address."</p>
+<h4>What problem does it solve?</h4>
+<p>A 3-bit register field can only name 8 registers — but each register can hold a <em>full-width address</em> (16, 32, 64 bits). So a tiny instruction field can reach <em>anywhere</em> in memory, and the pointer can be changed at run time. This is how pointers in C actually work underneath.</p>
+<h4>The picture — contrast with direct addressing</h4>
+<div class="cmp2">
+<div class="col"><h5>Register indirect</h5>
+<div class="flow" style="align-items:flex-start">
+<div class="fbox">Instruction → names a register</div>
+<div class="farrow">↓</div>
+<div class="fbox">Register → contains an ADDRESS</div>
+<div class="farrow">↓</div>
+<div class="fbox">Memory cell at that address → contains the DATA</div>
+</div></div>
+<div class="col"><h5>Direct (for contrast)</h5>
+<div class="flow" style="align-items:flex-start">
+<div class="fbox">Instruction → directly specifies the memory ADDRESS</div>
+<div class="farrow">↓</div>
+<div class="fbox">Memory cell at that address → contains the DATA</div>
+</div></div>
+</div>
+<h4>Step-by-step example (from the notes)</h4>
+<pre><code><span class="c">; 8051: suppose R0 = 40H and M[40H] = 25H</span>
+<span class="m">MOV</span> A, @R0   <span class="c">; A ← M[R0] → A = 25H   ('@' means "indirect through")</span></code></pre>
+<pre><code><span class="c">; 8086:</span>
+<span class="m">MOV</span> AL, [BX]  <span class="c">; AL gets the value indirectly from memory via BX</span></code></pre>
+<ul>
+<li><strong>Effective address:</strong> EA = contents of the named register. Here EA = R0 = <code>40H</code>; operand = M[<code>40H</code>] = <code>25H</code>.</li>
+<li><strong>State trace:</strong> R0 = <code>40H</code> (unchanged), M[40H] = <code>25H</code> (unchanged), A: ? → <code>25H</code>.</li>
+</ul>
+<h4>Advantages / disadvantages / when useful</h4>
+<ul>
+<li><b>+</b> Full memory reach with a tiny field; pointer can be computed/changed at run time; only one memory access.</li>
+<li><b>−</b> One memory access still required (slower than register mode); needs a register reserved as pointer.</li>
+<li><b>Useful for:</b> pointers, walking data structures, passing large objects by reference.</li>
+</ul>
+
+<h3 id="am-auto">10.5 · Auto-increment / Auto-decrement Mode</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> "Very similar to register indirect mode. Available in 8051, PDP-11 or ARM. The only difference: the register is <em>decremented or incremented before or after</em> its value is used to access memory. When the address stored in the register defines a data table in memory, it is crucial to increment or decrement the register after each access."</p>
+<h4>What problem does it solve?</h4>
+<p>Processing arrays element-by-element needs <em>two</em> actions per element: access M[pointer], then move the pointer. This mode fuses them into one instruction — the pointer updates itself automatically. It is also exactly how hardware stacks implement PUSH (auto-decrement) and POP (auto-increment).</p>
+<h4>How it works &amp; examples (from the notes)</h4>
+<pre><code><span class="c">; Auto-increment (conceptual notation):</span>
+<span class="m">MOV</span> A, @R0+   <span class="c">; A ← M[R0], then R0 ← R0 + 1</span>
+<span class="c">; (the notes clarify: on a real 8051 you write INC R0 after the indirect access)</span>
+
+<span class="c">; Auto-decrement on 8051 (from the notes):</span>
+<span class="m">MOV</span> R0, <span class="n">#35H</span>  <span class="c">; initialise pointer at 0x35</span>
+<span class="m">DEC</span> R0        <span class="c">; R0 → 0x34 (point to previous address)</span>
+<span class="m">MOV</span> A, @R0    <span class="c">; A ← M[34H]</span></code></pre>
+<ul>
+<li><strong>Effective address:</strong> EA = contents of the register (the update happens before or after the access, depending on convention).</li>
+<li><strong>State trace (auto-increment):</strong> suppose R0 = <code>40H</code>, M[40H] = <code>25H</code>. After <code>MOV A, @R0+</code>: A = <code>25H</code> <em>and</em> R0 = <code>41H</code> — the register changed, unlike plain register indirect.</li>
+</ul>
+<h4>Advantages / disadvantages / when useful</h4>
+<ul>
+<li><b>+</b> One instruction does access + pointer update → shorter, faster loops; natural stack operations.</li>
+<li><b>−</b> The register is modified as a side effect — a common source of bugs if forgotten.</li>
+<li><b>Useful for:</b> array/table traversal, stack PUSH/POP, sequential I/O buffers.</li>
+</ul>
+<div class="note warn"><span class="nt">Common Confusion</span> Register indirect leaves the pointer register <em>unchanged</em>; auto-increment/decrement <em>changes it</em>. When tracing code, always check whether the mode updates the register.</div>
+</section>
+<!-- ===================== LECTURE 1.3.4 ===================== -->
+<section class="chapter" id="am-direct">
+<h2>10.6–10.9 · The Memory-Based Modes</h2>
+
+<h3>10.6 · Direct Address Mode</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> "In the direct address mode, <em>the address part of the instruction is equal to the effective address</em>. The operand resides in memory, and the address is given directly by the instruction's address field. In a branch-type instruction, the address field specifies the actual branch address."</p>
+<h4>What problem does it solve?</h4>
+<p>The simplest way to reach memory: just say the address. No registers, no arithmetic. Ideal for named variables at fixed locations.</p>
+<h4>How it works &amp; example</h4>
+<pre><code><span class="m">MOV</span> A, <span class="n">30H</span>   <span class="c">; move the CONTENT of memory cell 30H into accumulator A</span></code></pre>
+<div class="flow" style="align-items:flex-start">
+<div class="fbox">Instruction address field = <b>30H</b></div>
+<div class="farrow">↓ EA = 30H (the field <em>is</em> the address)</div>
+<div class="fbox">Memory cell 30H → contains the DATA → loaded into A</div>
+</div>
+<ul>
+<li><strong>Effective address:</strong> EA = address field = <code>30H</code>.</li>
+<li><strong>State:</strong> if M[30H] = <code>99H</code>, then after execution A = <code>99H</code>; memory unchanged.</li>
+</ul>
+<h4>Advantages / disadvantages / when useful</h4>
+<ul>
+<li><b>+</b> Simple to understand and decode; only one memory access.</li>
+<li><b>−</b> Address is fixed at assembly time; field width limits reachable memory (12 bits → only 4K cells).</li>
+<li><b>Useful for:</b> accessing global/static variables, branch targets.</li>
+</ul>
+
+<h3 id="am-indirect">10.7 · Indirect Address Mode</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> "In indirect address mode, the address field of the instruction gives <em>the address in which the effective address is stored in memory</em>. The control fetches the instruction and then uses its address part to (again) access memory to read the effective address."</p>
+<h4>What problem does it solve?</h4>
+<p>The pointer lives in <em>memory</em>, not in a register. This lets a small address field reach full-width addresses (the cell it points to holds a complete address), and the pointer can be updated by the program without changing the instruction — the classic way to implement pointers and dynamic data structures on simple machines.</p>
+<h4>How it works &amp; example (from the notes)</h4>
+<pre><code><span class="m">MOV</span> A, <span class="n">31H</span>  <span class="c">; INDIRECT: if M[31H] = 55H and M[55H] = 35H, then A = 35H</span></code></pre>
+<div class="flow" style="align-items:flex-start">
+<div class="fbox">Instruction address field = <b>31H</b></div>
+<div class="farrow">↓ first memory read</div>
+<div class="fbox">M[31H] = <b>55H</b> ← this is the <em>effective address</em></div>
+<div class="farrow">↓ second memory read</div>
+<div class="fbox">M[55H] = <b>35H</b> ← this is the <em>data</em>, loaded into A</div>
+</div>
+<ul>
+<li><strong>Effective address:</strong> EA = M[address field] = M[<code>31H</code>] = <code>55H</code>; operand = M[<code>55H</code>] = <code>35H</code>.</li>
+<li><strong>Memory accesses:</strong> <em>two</em> — one to fetch the pointer, one to fetch the data.</li>
+</ul>
+<div class="note warn"><span class="nt">Note on the notes</span> The lecture writes this example with the same syntax as its direct-mode example (<code>MOV A, 31H</code>) and relies on the comment to signal indirection. Real assemblers distinguish the modes explicitly — e.g. <code>MOV A, @31H</code> or <code>LDA (31H)</code>. Treat the notes' notation as conceptual; the <em>concept</em> (address → address → data) is what matters.</div>
+<h4>Advantages / disadvantages / when useful</h4>
+<ul>
+<li><b>+</b> Full-width addresses through a small field; pointer can change at run time.</li>
+<li><b>−</b> Two memory accesses → slower; harder to follow when reading code.</li>
+<li><b>Useful for:</b> pointers stored in memory, jump tables, dynamically located data.</li>
+</ul>
+
+<h3 id="am-indexed">10.8 · Indexed Address Mode</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> "The content of an <em>index register</em> is added to the instruction's address part to obtain the effective address. The index register is a special CPU register holding an index value; the instruction's address field defines the <em>beginning address of a data array</em> in memory." And the general formula from the notes:</p>
+<div class="formula-box"><span class="fm">EA = address part of instruction + content of CPU register</span>
+<div class="fexp">The notes generalise: the register may be an index register, a base register, or the program counter — each choice gives a different named mode (indexed / based / relative).</div></div>
+<h4>What problem does it solve?</h4>
+<p>Arrays. If <code>table</code> starts at address 200H and you want element <em>i</em>, the address is 200H + <em>i</em>. Put 200H in the instruction (fixed) and <em>i</em> in the index register (variable, changed by the loop) — one instruction form serves every element.</p>
+<h4>How it works &amp; example</h4>
+<pre><code><span class="c">; conceptual: load A with table[i]</span>
+<span class="c">; address field = 200H (start of table), index register X = 05H</span>
+<span class="m">MOV</span> A, <span class="n">200H</span>(X)  <span class="c">; EA = 200H + 05H = 205H → A ← M[205H]</span></code></pre>
+<ul>
+<li><strong>Effective address:</strong> EA = <code>200H</code> + (X) = <code>205H</code>.</li>
+<li><strong>State:</strong> X = <code>05H</code> (unchanged), M[205H] copied into A. Next loop iteration: increment X to <code>06H</code> → the same instruction now reads M[206H].</li>
+</ul>
+<h4>Advantages / disadvantages / when useful</h4>
+<ul>
+<li><b>+</b> Perfect for arrays and records; one instruction walks the whole table as the index changes.</li>
+<li><b>−</b> Needs an adder step in the CPU (EA computation takes time); uses up a register as the index.</li>
+<li><b>Useful for:</b> array indexing, struct field access, loop-controlled data processing.</li>
+</ul>
+
+<h3 id="am-relative">10.9 · Relative Address Mode</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> "The effective address is calculated by adding the content of the CPU register [the program counter] to the address part of the instruction word. The effective address is the sum of the <em>displacement</em> and the value of the register. The address part is typically a <em>signed number</em>, which can be negative or positive. The resultant effective address is <em>relative to the address of the next instruction</em>." The notes give the symbolic form and formula:</p>
+<div class="formula-box"><span class="fm">X(PC) &nbsp;→&nbsp; EA = X + (PC)</span>
+<div class="fexp">X = signed displacement stored in the instruction; (PC) = current content of the program counter. Because the operand is found relative to the PC, this is the <em>relative</em> address mode.</div></div>
+<h4>What problem does it solve?</h4>
+<p><strong>Position-independent code.</strong> If a program is loaded at a different memory address, absolute branch targets break — but a target expressed as "40 bytes ahead of where we are now" works anywhere. This is how real branch instructions on most CPUs (x86, ARM, MIPS) are encoded.</p>
+<h4>How it works &amp; example</h4>
+<pre><code><span class="c">; suppose PC = 100H (pointing at next instruction) and displacement X = +25H</span>
+<span class="m">JMP</span> <span class="n">+25H</span>  <span class="c">; EA = 25H + 100H = 125H → execution continues at 125H</span></code></pre>
+<ul>
+<li><strong>Effective address:</strong> EA = <code>25H</code> + <code>100H</code> = <code>125H</code>.</li>
+<li><strong>Signed displacement:</strong> X = <code>−10H</code> would give EA = <code>100H − 10H</code> = <code>F0H</code> — a backward jump (loops!).</li>
+</ul>
+<h4>Advantages / disadvantages / when useful</h4>
+<ul>
+<li><b>+</b> Code can be relocated anywhere in memory; displacements are small (few bits) since targets are usually nearby.</li>
+<li><b>−</b> Range is limited by the displacement field's width.</li>
+<li><b>Useful for:</b> branch/jump instructions, loops, relocatable programs.</li>
+</ul>
+
+<h3 id="ea-table">10.10 · EA Comparison Table (revision)</h3>
+<div class="twrap"><table>
+<tr><th>#</th><th>Mode</th><th>Where is the operand?</th><th>EA formula</th><th>Memory reads for data</th><th>Notation seen in notes</th></tr>
+<tr><td>1</td><td>Implied</td><td>In the register named by the opcode</td><td>—</td><td>0</td><td><code>CMA</code></td></tr>
+<tr><td>2</td><td>Immediate</td><td>Inside the instruction itself</td><td>— (operand field)</td><td>0</td><td><code>MOV A, #55H</code>, <code>MVI A, 55H</code></td></tr>
+<tr><td>3</td><td>Register</td><td>In a CPU register</td><td>— (register field)</td><td>0</td><td><code>MOV A, B</code></td></tr>
+<tr><td>4</td><td>Register indirect</td><td>In memory; register holds its address</td><td>EA = (R)</td><td>1</td><td><code>MOV A, @R0</code>, <code>MOV AL, [BX]</code></td></tr>
+<tr><td>5</td><td>Auto-inc / auto-dec</td><td>In memory; register holds address, then R ± 1</td><td>EA = (R), then R←R±1</td><td>1</td><td><code>MOV A, @R0+</code></td></tr>
+<tr><td>6</td><td>Direct</td><td>In memory; instruction holds its address</td><td>EA = address field</td><td>1</td><td><code>MOV A, 30H</code></td></tr>
+<tr><td>7</td><td>Indirect</td><td>In memory; memory cell holds its address</td><td>EA = M[address field]</td><td>2</td><td><code>MOV A, (31H)</code></td></tr>
+<tr><td>8</td><td>Indexed</td><td>In memory; base + index</td><td>EA = address field + (index reg)</td><td>1</td><td><code>MOV A, 200H(X)</code></td></tr>
+<tr><td>9</td><td>Relative</td><td>In memory; PC + displacement</td><td>EA = X + (PC)</td><td>1</td><td><code>X(PC)</code></td></tr>
+</table></div>
+
+<div class="quiz"><h4>✔ Check Your Understanding</h4>
+<ol>
+<li>R0 = 50H, M[50H] = 77H. After <code>MOV A, @R0</code>, what is A, and what is the EA?</li>
+<li>M[31H] = 55H, M[55H] = 35H. For <em>direct</em> mode with address field 31H, what does A receive? For <em>indirect</em> mode?</li>
+<li>Index register = 03H, instruction address field = 400H. EA = ?</li>
+<li>PC = 200H, displacement = −08H. EA = ? Is the jump forward or backward?</li>
+<li>Why does indirect mode cost more time than direct mode?</li>
+<li>Which modes need no memory access for the operand at all?</li>
+</ol>
+<details><summary>Show answers</summary><div class="dbody">
+<ol>
+<li>A = 77H; EA = (R0) = 50H.</li>
+<li>Direct: A = M[31H] = 55H. Indirect: EA = M[31H] = 55H, so A = M[55H] = 35H.</li>
+<li>EA = 400H + 03H = 403H.</li>
+<li>EA = 200H − 08H = 1F8H; backward (negative displacement) — typical of a loop branch.</li>
+<li>Indirect requires <em>two</em> memory reads (pointer, then data); direct needs only one.</li>
+<li>Immediate, register, and implied modes — the operand is in the instruction or in a register.</li>
+</ol>
+</div></details>
+</div>
+</section>
+
+<section class="chapter" id="instruction-cycle">
+<h2>11 · The Instruction Cycle</h2>
+<p><span class="tag tag-src">From Lecture Notes</span> "The time a microprocessor needs to <em>fetch and execute one entire instruction</em> is known as an <strong>instruction cycle</strong>." The notes describe four typical stages:</p>
+<div class="note def"><span class="nt">The four stages (Lecture 1.3.2)</span>
+<ol>
+<li><strong>Fetch the instruction</strong> — the next instruction is fetched from the memory address stored in the PC and placed in the IR. At the end of the fetch, the PC points to the next instruction.</li>
+<li><strong>Decode the instruction</strong> — the encoded instruction in the IR is interpreted by the decoder.</li>
+<li><strong>Read the effective address</strong> — for a memory instruction with <em>indirect</em> addressing, the effective address is read from memory and the data fetched into data registers (clock pulse T3). If the instruction is <em>direct</em>, nothing is done at this pulse. If it is an I/O or register instruction, execution happens here.</li>
+<li><strong>Execute the instruction</strong> — the control unit passes decoded information as control signals to the functional units: values read from registers, passed to the ALU, results written back. If the ALU is involved it sends a <em>condition signal</em> back to the control unit. The result is stored in memory or sent to an output device. Based on ALU feedback, the PC may be updated to a different address (a branch).</li>
+</ol></div>
+
+<h3>11.1 The expanded seven-stage view (from the notes' state diagram)</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> The notes' instruction-cycle state diagram expands the four stages into seven states, noting that <em>"various states can be null, while others can be visited more than once"</em>:</p>
+<div class="flow">
+<div class="fbox">1 · Instruction Address Calculation<span class="sm">compute the address of the next instruction — a fixed number (the instruction length) is added to the previous instruction's address</span></div>
+<div class="farrow">↓</div>
+<div class="fbox">2 · Instruction Fetch<span class="sm">read the instruction from its memory location into the processor (IR)</span></div>
+<div class="farrow">↓</div>
+<div class="fbox">3 · Instruction Operation Decoding<span class="sm">interpret the instruction: which operation? which operands?</span></div>
+<div class="farrow">↓</div>
+<div class="fbox">4 · Operand Address Calculation<span class="sm">if the instruction references an operand in memory or I/O, compute its effective address</span></div>
+<div class="farrow">↓</div>
+<div class="fbox">5 · Operand Fetch<span class="sm">read the operand from memory or I/O</span></div>
+<div class="farrow">↓</div>
+<div class="fbox">6 · Data Operation<span class="sm">perform the actual operation the instruction specifies</span></div>
+<div class="farrow">↓</div>
+<div class="fbox">7 · Store Operand<span class="sm">write the result back to memory, or transfer it to I/O</span></div>
+<div class="loop">↺ back to state 1 for the next instruction</div>
+</div>
+<div class="note warn"><span class="nt">Note on the notes</span> The document phrases stage 1 as "A <em>permanent number is inserted</em> to the address of the earlier instruction." The intended meaning: a <em>fixed constant</em> (the size of the instruction) is <em>added</em> to the previous instruction's address — i.e., the PC simply advances by one instruction length.</div>
+
+<h3>11.2 Which stages can be skipped?</h3>
+<p><span class="tag tag-clar">Clarification</span> Not every instruction visits every state — this is what "states can be null" means:</p>
+<div class="twrap"><table>
+<tr><th>Instruction kind</th><th>Stages used</th><th>Skipped</th><th>Example</th></tr>
+<tr><td>Implied / register-reference</td><td>1, 2, 3, 6</td><td>4, 5, 7 (no memory operand)</td><td><code>CMA</code>, <code>INC AX</code></td></tr>
+<tr><td>Immediate</td><td>1, 2, 3, 6</td><td>4, 5 (operand is inside the instruction), 7</td><td><code>MVI A, 55H</code></td></tr>
+<tr><td>Direct memory read</td><td>1–6</td><td>7 (result goes to a register)</td><td><code>LDA 2000H</code></td></tr>
+<tr><td>Direct memory write</td><td>1–5, 7</td><td>6 (no computation)</td><td><code>STA 3000H</code></td></tr>
+<tr><td>Indirect memory</td><td>1–6, maybe 7; stage 4/5 visited <em>more than once</em></td><td>—</td><td><code>MOV A, (31H)</code></td></tr>
+<tr><td>Jump</td><td>1, 2, 3 (+ PC update in 6)</td><td>4, 5, 7</td><td><code>JMP 2000H</code></td></tr>
+</table></div>
+
+<h3>11.3 Complete worked example: <code>LDA 2000H</code> (8085)</h3>
+<p><span class="tag tag-clar">Clarification</span> Let us walk one instruction through every player. <code>LDA 2000H</code> means "load the accumulator with the contents of memory cell 2000H." Suppose PC = <code>1000H</code>, M[1000H..1002H] holds the 3-byte instruction, and M[2000H] = <code>4FH</code>.</p>
+<div class="twrap"><table class="state-table">
+<tr><th>Stage</th><th>What happens</th><th>PC</th><th>IR</th><th>AC</th></tr>
+<tr><td>start</td><td>—</td><td>1000H</td><td>—</td><td>??</td></tr>
+<tr><td>1 · Address calc</td><td>Address of instruction = PC = 1000H</td><td>1000H</td><td>—</td><td>??</td></tr>
+<tr><td>2 · Fetch</td><td>Opcode byte read via address/control/data buses into IR; PC advances over all 3 bytes of the instruction</td><td>1003H</td><td>LDA 2000H</td><td>??</td></tr>
+<tr><td>3 · Decode</td><td>Control unit recognises "load AC, direct mode, address 2000H"</td><td>1003H</td><td>LDA 2000H</td><td>??</td></tr>
+<tr><td>4 · Operand EA</td><td>Direct mode: EA = address field = 2000H</td><td>1003H</td><td>—</td><td>??</td></tr>
+<tr><td>5 · Operand fetch</td><td>Memory read at 2000H → 4FH travels the data bus into the CPU</td><td>1003H</td><td>—</td><td>??</td></tr>
+<tr><td>6 · Data operation</td><td>Value placed into the accumulator</td><td>1003H</td><td>—</td><td>4FH</td></tr>
+<tr><td>7 · Store</td><td>Not needed — result is already in a register</td><td>1003H</td><td>—</td><td>4FH</td></tr>
+</table></div>
+<p>Cycle then restarts at stage 1 with PC = 1003H — the next instruction.</p>
+<div class="note key"><span class="nt">Key Idea</span> The instruction cycle is the <em>instruction-level</em> view (fetch → decode → execute) while the machine cycle is the <em>bus-level</em> view (opcode fetch, memory read…). They are two zoom levels of the same events: this example used 3 machine cycles — opcode fetch + two memory reads for the address bytes — inside one instruction cycle.</div>
+<div class="quiz"><h4>✔ Check Your Understanding</h4>
+<ol>
+<li>At the end of the fetch stage, what does the PC point to?</li>
+<li>Which stages are skipped entirely by <code>CMA</code> (complement accumulator)?</li>
+<li>Which stage does an indirect-mode instruction visit more than once?</li>
+<li>What can cause the PC to change to a non-sequential address?</li>
+</ol>
+<details><summary>Show answers</summary><div class="dbody">
+<ol>
+<li>The next instruction in memory.</li>
+<li>Stages 4, 5 and 7 — it has no memory operand and stores nothing to memory.</li>
+<li>Stages 4/5 (operand address calculation / fetch): once to read the pointer, once to read the data.</li>
+<li>A branch/jump, call, or interrupt — the execute stage overwrites the PC (possibly based on an ALU condition signal).</li>
+</ol>
+</div></details>
+</div>
+</section>
+
+<section class="chapter" id="operations">
+<h2>12 · Operations in the Instruction Set <span class="small">(Lecture 1.3.3)</span></h2>
+<p><span class="tag tag-src">From Lecture Notes</span> "The <strong>Instruction Set</strong> is the collection of instructions a CPU can execute, categorised by the type of operation they perform." The notes give four categories with a table of examples each. Below, every table from the document is preserved and every important instruction gets the full treatment: <em>purpose → syntax → operands → effect → example → register/memory state</em>.</p>
+
+<h3 id="op-arith">12.1 · Arithmetic Operations</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> "Perform mathematical computations such as addition, subtraction, multiplication, and division."</p>
+<div class="twrap"><table>
+<tr><th>Instruction</th><th>Description (from notes)</th><th>Example (from notes)</th></tr>
+<tr><td><code>ADD R1, R2</code></td><td>Adds R2 to R1</td><td><code>ADD AX, BX</code> (x86)</td></tr>
+<tr><td><code>SUB R1, R2</code></td><td>Subtracts R2 from R1</td><td><code>SUB AX, BX</code> (x86)</td></tr>
+<tr><td><code>MUL R1, R2</code></td><td>Multiplies R1 and R2</td><td><code>MUL BX</code> (x86)</td></tr>
+<tr><td><code>DIV R1, R2</code></td><td>Divides R1 by R2</td><td><code>DIV BX</code> (x86)</td></tr>
+<tr><td><code>INC R1</code></td><td>Increments R1 by 1</td><td><code>INC AX</code> (x86)</td></tr>
+<tr><td><code>DEC R1</code></td><td>Decrements R1 by 1</td><td><code>DEC CX</code> (x86)</td></tr>
+<tr><td><code>NEG R1</code></td><td>Negates the value in R1</td><td><code>NEG AX</code> (x86)</td></tr>
+<tr><td><code>ADC R1, R2</code></td><td>Adds R2 to R1 <em>with carry</em></td><td><code>ADC AX, BX</code> (x86)</td></tr>
+<tr><td><code>SBB R1, R2</code></td><td>Subtracts R2 from R1 <em>with borrow</em></td><td><code>SBB AX, BX</code> (x86)</td></tr>
+</table></div>
+<h4>ADD / SUB — the workhorses</h4>
+<p><code>ADD AX, BX</code> → AX ← AX + BX. Before: AX=<code>0010H</code>, BX=<code>0005H</code>. After: AX=<code>0015H</code>, BX unchanged; flags record properties of the sum. <code>SUB AX, BX</code> → AX ← AX − BX, same pattern.</p>
+<h4>MUL / DIV — note the asymmetry on x86</h4>
+<p><span class="tag tag-clar">Clarification</span> On x86, <code>MUL BX</code> multiplies the implicit <code>AX</code> by <code>BX</code>, storing the full 32-bit product in <code>DX:AX</code> (two registers) — because a 16×16-bit product can need 32 bits. <code>DIV BX</code> likewise divides the 32-bit <code>DX:AX</code> pair by <code>BX</code>, leaving the quotient in AX and the remainder in DX. The notes' generic <code>MUL R1, R2</code> form simplifies this; on many RISC machines (e.g., MIPS) you do get a clean three-operand form.</p>
+<h4>INC / DEC — +1 and −1</h4>
+<p><code>INC AX</code> → AX ← AX + 1. Before AX=<code>00FFH</code> → after AX=<code>0100H</code>. Used constantly for loop counters and pointer updates (the <code>DEC R0</code> from Section 10.5 is the same idea). They exist as separate instructions because they encode shorter than <code>ADD AX, 1</code>.</p>
+<h4>NEG — flip the sign</h4>
+<p><code>NEG AX</code> computes the two's-complement negation: AX ← 0 − AX. Before AX=<code>0005H</code> → after AX=<code>FFFBH</code> (−5 in two's complement).</p>
+<h4>ADC / SBB — arithmetic with carry/borrow</h4>
+<p><span class="tag tag-clar">Clarification</span> <code>ADC AX, BX</code> → AX ← AX + BX + <em>Carry flag</em>. <code>SBB AX, BX</code> → AX ← AX − BX − <em>Carry flag (borrow)</em>. Why include the carry? To chain multi-word arithmetic: when adding 32-bit numbers as two 16-bit halves, the carry out of the low half must flow into the high half. First <code>ADD</code> the low halves, then <code>ADC</code> the high halves.</p>
+
+<h3 id="op-logic">12.2 · Logical Operations</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> "Perform bitwise logical manipulations, such as AND, OR, XOR, NOT, and shifts."</p>
+<div class="twrap"><table>
+<tr><th>Instruction</th><th>Description (from notes)</th><th>Example (from notes)</th></tr>
+<tr><td><code>AND R1, R2</code></td><td>Bitwise AND of R1 and R2</td><td><code>AND AX, BX</code> (x86)</td></tr>
+<tr><td><code>OR R1, R2</code></td><td>Bitwise OR of R1 and R2</td><td><code>OR AX, BX</code> (x86)</td></tr>
+<tr><td><code>XOR R1, R2</code></td><td>Bitwise XOR of R1 and R2</td><td><code>XOR AX, BX</code> (x86)</td></tr>
+<tr><td><code>NOT R1</code></td><td>Complements the bits of R1</td><td><code>NOT AX</code> (x86)</td></tr>
+<tr><td><code>SHL R1, n</code></td><td>Shift bits of R1 left by n</td><td><code>SHL AX, 1</code> (x86)</td></tr>
+<tr><td><code>SHR R1, n</code></td><td>Shift bits of R1 right by n</td><td><code>SHR AX, 1</code> (x86)</td></tr>
+<tr><td><code>ROL R1, n</code></td><td>Rotate bits of R1 left by n</td><td><code>ROL AX, 1</code> (x86)</td></tr>
+<tr><td><code>ROR R1, n</code></td><td>Rotate bits of R1 right by n</td><td><code>ROR AX, 1</code> (x86)</td></tr>
+<tr><td><code>TEST R1, R2</code></td><td>Bitwise AND <em>without storing</em>; sets flags</td><td><code>TEST AX, BX</code> (x86)</td></tr>
+</table></div>
+<h4>AND / OR / XOR / NOT — bit-by-bit logic</h4>
+<p>These apply a Boolean operation to <em>each bit position independently</em>. Example with 8-bit values:</p>
+<pre><code><span class="c">; before: AL = 1100 1010, BL = 1010 0110</span>
+<span class="m">AND</span> AL, BL  <span class="c">; AL = 1000 0010  (1 only where BOTH bits are 1)</span>
+<span class="m">OR</span>  AL, BL  <span class="c">; AL = 1110 1110  (1 where EITHER bit is 1)</span>
+<span class="m">XOR</span> AL, BL  <span class="c">; AL = 0110 1100  (1 where bits DIFFER)</span>
+<span class="m">NOT</span> AL      <span class="c">; AL = 0011 0101  (every bit flipped)</span></code></pre>
+<p><span class="tag tag-clar">Clarification</span> Classic uses: <code>AND</code> masks bits off (clear unwanted bits), <code>OR</code> sets bits, <code>XOR</code> toggles bits — and <code>XOR AX, AX</code> is the standard trick to zero a register.</p>
+<h4>TEST — AND without the result</h4>
+<p><code>TEST AX, BX</code> computes AX AND BX <em>temporarily</em> and only updates the flags — most importantly the Zero flag. The classic idiom <code>TEST AX, AX</code> answers "is AX zero?" without destroying AX (ZF=1 if AX was 0).</p>
+<h4>SHL / SHR — shifts (moving bits off the edge)</h4>
+<pre><code><span class="c">; AL = 0011 0101</span>
+<span class="m">SHL</span> AL, <span class="n">1</span>  <span class="c">; AL = 0110 1010  — every bit moves left; rightmost filled with 0; = multiply by 2</span>
+<span class="m">SHR</span> AL, <span class="n">1</span>  <span class="c">; AL = 0001 1010  — every bit moves right; leftmost filled with 0; = divide by 2</span></code></pre>
+<h4>ROL / ROR — rotates (bits that fall off come back on the other side)</h4>
+<pre><code><span class="c">; AL = 0011 0101</span>
+<span class="m">ROL</span> AL, <span class="n">1</span>  <span class="c">; AL = 0110 1010  — the bit that fell off the left edge returns on the right</span>
+<span class="m">ROR</span> AL, <span class="n">1</span>  <span class="c">; AL = 1001 1010  — the bit that fell off the right edge returns on the left</span></code></pre>
+<div class="note key"><span class="nt">Shift vs Rotate</span> A <em>shift</em> discards the edge bit and inserts 0; a <em>rotate</em> recycles the edge bit to the opposite end. Shifts model multiply/divide by 2; rotates rearrange bit patterns without losing information.</div>
+
+<h3 id="op-data">12.3 · Data Transfer Operations</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> "These types of instructions move data between registers, memory, and I/O devices."</p>
+<div class="twrap"><table>
+<tr><th>Instruction</th><th>Description (from notes)</th><th>Example (from notes)</th></tr>
+<tr><td><code>MOV R1, R2</code></td><td>Moves data from R2 to R1</td><td><code>MOV AX, BX</code> (x86)</td></tr>
+<tr><td><code>LD R1, ADDR</code></td><td>Loads data from memory address into R1</td><td><code>LDA 2000H</code> (8085)</td></tr>
+<tr><td><code>ST R1, ADDR</code></td><td>Stores R1 into memory address</td><td><code>STA 3000H</code> (8085)</td></tr>
+<tr><td><code>PUSH R1</code></td><td>Pushes R1 onto the stack</td><td><code>PUSH AX</code> (x86)</td></tr>
+<tr><td><code>POP R1</code></td><td>Pops the top of stack into R1</td><td><code>POP AX</code> (x86)</td></tr>
+<tr><td><code>IN R1, PORT</code></td><td>Inputs data from an I/O port into R1</td><td><code>IN AX, 60H</code> (x86)</td></tr>
+<tr><td><code>OUT PORT, R1</code></td><td>Outputs R1 to an I/O port</td><td><code>OUT 60H, AX</code> (x86)</td></tr>
+<tr><td><code>LEA R1, ADDR</code></td><td>Loads the <em>address</em> (not the contents) into R1</td><td><code>LEA AX, [BX+SI]</code> (x86)</td></tr>
+<tr><td><code>XCHG R1, R2</code></td><td>Exchanges contents of R1 and R2</td><td><code>XCHG AX, BX</code> (x86)</td></tr>
+</table></div>
+<h4>MOV / LD(LDA) / ST(STA)</h4>
+<pre><code><span class="c">; 8085:</span>
+<span class="m">LDA</span> <span class="n">2000H</span>  <span class="c">; AC ← M[2000H] — direct addressing, one memory read</span>
+<span class="m">STA</span> <span class="n">3000H</span>  <span class="c">; M[3000H] ← AC — the opposite direction: "store"</span></code></pre>
+<p><code>LDA 2000H</code>: before AC=??, M[2000H]=<code>4FH</code> → after AC=<code>4FH</code>. <code>STA 3000H</code>: before AC=<code>4FH</code> → after M[3000H]=<code>4FH</code>. Data transfer instructions are the most frequently executed category in almost every program.</p>
+<h4>PUSH / POP — the hardware stack</h4>
+<p><span class="tag tag-clar">Clarification</span> The <strong>stack</strong> is a last-in-first-out (LIFO) area of memory managed by a register called the <strong>Stack Pointer (SP)</strong>. PUSH: SP moves (downward on x86/8085), value written to the new top. POP: top value copied out, SP moves back.</p>
+<pre><code><span class="c">; before: SP = FFF0H, AX = 1234H</span>
+<span class="m">PUSH</span> AX    <span class="c">; SP = FFEEH, M[FFEEH] = 1234H</span>
+<span class="m">POP</span> BX     <span class="c">; BX = 1234H, SP = FFF0H</span></code></pre>
+<h4>IN / OUT — talking to devices</h4>
+<p><code>IN AX, 60H</code> reads a 16-bit word from I/O port 60H (e.g., a keyboard controller) into AX; <code>OUT 60H, AX</code> writes AX to port 60H. Ports are addressed separately from memory on x86 (see Section 14.3).</p>
+<h4>LEA — address, not contents</h4>
+<p><span class="tag tag-clar">Clarification</span> <code>LEA AX, [BX+SI]</code> computes the effective address (BX+SI) and puts <em>the address itself</em> into AX — no memory read. Contrast: <code>MOV AX, [BX+SI]</code> would load the <em>contents</em> of that address. LEA exists so pointer arithmetic can be done explicitly.</p>
+<h4>XCHG — swap in one step</h4>
+<p><code>XCHG AX, BX</code>: before AX=<code>0007H</code>, BX=<code>00F0H</code> → after AX=<code>00F0H</code>, BX=<code>0007H</code>. One instruction, no temporary register needed.</p>
+
+<h3 id="op-control">12.4 · Timing and Control Operations</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> "These instructions are used to manage program flow, control system hardware, and manage the processor state."</p>
+<div class="twrap"><table>
+<tr><th>Instruction</th><th>Description (from notes)</th><th>Example (from notes)</th></tr>
+<tr><td><code>NOP</code></td><td>No operation; used for timing or delays</td><td><code>NOP</code> (x86, 8085)</td></tr>
+<tr><td><code>HLT</code></td><td>Halts the processor until reset</td><td><code>HLT</code> (8085)</td></tr>
+<tr><td><code>WAIT</code></td><td>Waits for an external signal</td><td><code>WAIT</code> (x86)</td></tr>
+<tr><td><code>CLC</code></td><td>Clears the carry flag</td><td><code>CLC</code> (x86)</td></tr>
+<tr><td><code>STC</code></td><td>Sets the carry flag</td><td><code>STC</code> (x86)</td></tr>
+<tr><td><code>CLI</code></td><td>Clears interrupt flag (disable interrupts)</td><td><code>CLI</code> (x86)</td></tr>
+<tr><td><code>STI</code></td><td>Sets interrupt flag (enable interrupts)</td><td><code>STI</code> (x86)</td></tr>
+<tr><td><code>INT n</code></td><td>Generates a software interrupt</td><td><code>INT 21H</code> (x86)</td></tr>
+<tr><td><code>RET</code></td><td>Returns from a subroutine/interrupt handler</td><td><code>RET</code> (x86)</td></tr>
+<tr><td><code>JMP ADDR</code></td><td>Unconditional jump to address</td><td><code>JMP 2000H</code> (8085)</td></tr>
+<tr><td><code>CALL ADDR</code></td><td>Calls a subroutine</td><td><code>CALL 3000H</code> (8085)</td></tr>
+<tr><td><code>RST n</code></td><td>Restart: jump to a fixed low address</td><td><code>RST 7</code> (8085)</td></tr>
+</table></div>
+<h4>NOP — deliberately doing nothing</h4>
+<p><span class="tag tag-clar">Clarification</span> NOP consumes an instruction cycle but changes nothing. Uses: padding for timing alignment, placeholders for patching code, and crude delay loops. On x86 it is the single byte <code>0x90</code>.</p>
+<h4>HLT / WAIT — stopping and pausing</h4>
+<p><code>HLT</code> freezes the CPU (until a hardware reset or, on x86, an enabled interrupt) — used by OS shutdown paths and idle loops. <code>WAIT</code> pauses until an external pin/signal says "ready" — historically used to synchronise with a floating-point coprocessor.</p>
+<h4>CLC / STC / CLI / STI — hand-editing the flags</h4>
+<p>These four are implied-mode instructions that directly set or clear one flag bit. <code>CLC</code> before <code>ADC</code>-chains guarantees a clean starting carry. <code>CLI/STI</code> disable/enable hardware interrupts — critical when an OS must guarantee an uninterruptible sequence (Section 14.3 explains interrupts).</p>
+<h4>JMP / CALL / RET — redirecting the PC</h4>
+<ul>
+<li><code>JMP 2000H</code>: PC ← 2000H. Execution simply continues elsewhere. The one-way door.</li>
+<li><code>CALL 3000H</code>: PUSH the address of the next instruction onto the stack, then PC ← 3000H. A two-way door — it remembers where home is.</li>
+<li><code>RET</code>: POP the stacked address back into the PC. Returns to the instruction right after the CALL. This CALL/RET pair is the machine-level basis of functions/methods in every language.</li>
+</ul>
+<h4>INT n / RST n — software interrupts and restart vectors</h4>
+<p><span class="tag tag-clar">Clarification</span> <code>INT 21H</code> on x86 triggers a <em>software interrupt</em>: the CPU saves its state and jumps to a pre-registered handler — the classic DOS system-call mechanism (INT 21H was the DOS API). The 8085's <code>RST n</code> is a compact one-byte call to one of eight fixed addresses (n×8) in low memory — used for hardware interrupts and breakpoints.</p>
+
+<div class="quiz"><h4>✔ Check Your Understanding</h4>
+<ol>
+<li>What is the difference between <code>AND</code> and <code>TEST</code>?</li>
+<li>Why is <code>XOR AX, AX</code> used to clear AX?</li>
+<li>After <code>CALL 3000H</code>, how does the CPU know where to return?</li>
+<li>What do <code>SHL AX, 1</code> and <code>SHR AX, 1</code> do arithmetically?</li>
+<li>AX=0010H, BX=0005H, Carry=1: what does <code>ADC AX, BX</code> produce?</li>
+</ol>
+<details><summary>Show answers</summary><div class="dbody">
+<ol>
+<li><code>AND</code> stores the result in the destination register; <code>TEST</code> computes the same AND but discards the result and only updates the flags.</li>
+<li>Any value XOR itself is all zeros — a one-instruction way to zero a register without needing an immediate operand.</li>
+<li><code>CALL</code> pushes the return address (address of the next instruction) onto the stack; <code>RET</code> pops it back into the PC.</li>
+<li>SHL multiplies by 2 (left shift); SHR divides by 2 (right shift) for unsigned values.</li>
+<li>AX = 0010H + 0005H + 1 = <b>0016H</b>.</li>
+</ol>
+</div></details>
+</div>
+</section>
+
+<section class="chapter" id="flags">
+<h2>13 · Flags / Condition Codes (Z, S, O, C)</h2>
+<p><span class="tag tag-src">From Lecture Notes</span> "At the end of execution of arithmetic and logical instructions, depending on the result in the Accumulator, <strong>Condition Codes (Zero, Sign, Overflow, Carry — ZSOC)</strong> are set, implying the outcome of the instruction execution. Generally, these flags are useful in <em>controlling the flow of the program</em>."</p>
+<h3>13.1 What a flag is</h3>
+<p><span class="tag tag-clar">Clarification</span> A <strong>flag</strong> is a single-bit register in the CPU's <em>status/flags register</em>. After every arithmetic/logical operation, the ALU doesn't just produce a result — it also produces yes/no <em>facts about</em> that result:</p>
+<div class="twrap"><table>
+<tr><th>Flag</th><th>Name</th><th>Set (=1) when…</th><th>Typical question it answers</th></tr>
+<tr><td><b>Z</b></td><td>Zero</td><td>the result is exactly 0</td><td>"Were the two values equal?" (SUB sets Z if equal)</td></tr>
+<tr><td><b>S</b></td><td>Sign</td><td>the result's most-significant bit is 1 (negative in two's complement)</td><td>"Is the result negative?"</td></tr>
+<tr><td><b>O</b></td><td>Overflow</td><td>a signed operation produced a result outside the representable range</td><td>"Did signed arithmetic break?"</td></tr>
+<tr><td><b>C</b></td><td>Carry</td><td>an unsigned addition carried out of the top bit, or a subtraction borrowed</td><td>"Did unsigned arithmetic wrap around?"</td></tr>
+</table></div>
+<h3>13.2 Result vs flags — the crucial distinction</h3>
+<p>The <strong>result</strong> (e.g., the sum in AX) and the <strong>flags</strong> (Z/S/O/C) are separate outputs of the ALU. The result says <em>what you got</em>; the flags say <em>what kind of thing happened while getting it</em>. Conditional branches (<code>JZ</code> jump-if-zero, <code>JNZ</code> jump-if-not-zero, <code>JC</code> jump-if-carry…) read only the flags — that is how arithmetic controls program flow, as the notes say.</p>
+<h3>13.3 Worked examples (8-bit for clarity)</h3>
+<div class="twrap"><table>
+<tr><th>Operation</th><th>Result</th><th>Z</th><th>S</th><th>O</th><th>C</th><th>Interpretation</th></tr>
+<tr><td><code>0111 1111 + 0000 0001</code> (127+1)</td><td><code>1000 0000</code></td><td>0</td><td>1</td><td>1</td><td>0</td><td>Signed overflow: +127+1 should be +128, but 8-bit signed max is +127 → got −128. O=1 flags the error.</td></tr>
+<tr><td><code>1111 1111 + 0000 0001</code> (255+1)</td><td><code>0000 0000</code></td><td>1</td><td>0</td><td>0</td><td>1</td><td>Unsigned wraparound: 256 doesn't fit → result 0 with a carry out. C=1, Z=1.</td></tr>
+<tr><td><code>0101 0101 − 0101 0101</code></td><td><code>0000 0000</code></td><td>1</td><td>0</td><td>0</td><td>0</td><td>Equality test: Z=1 means the values were equal — this is how CMP/JZ loops work.</td></tr>
+<tr><td><code>0000 0001 − 0000 0010</code> (1−2)</td><td><code>1111 1111</code></td><td>0</td><td>1</td><td>0</td><td>1</td><td>Borrow needed: 1−2 = −1 = FFH (two's complement), S=1, C=1 (borrow).</td></tr>
+</table></div>
+<div class="note key"><span class="nt">Key Idea</span> O and C answer different questions: <em>Carry</em> is for <strong>unsigned</strong> arithmetic (did it wrap past 0 or 2<sup>n</sup>?); <em>Overflow</em> is for <strong>signed</strong> arithmetic (did it wrap past ±range?). The same bit pattern can set one, the other, or both — the ALU reports both and the programmer uses the relevant one.</div>
+</section>
+
+<section class="chapter" id="instr-types">
+<h2>14 · Types of Instructions — the 16-bit Format</h2>
+<p><span class="tag tag-src">From Lecture Notes</span> "Instructions are a set of machine language instructions that a particular processor understands and executes." The notes present a <strong>16-bit instruction</strong> divided into fields (this is the classic teaching model from M. Morris Mano's <em>Computer System Architecture</em>):</p>
+<ul>
+<li><strong>Mode field (I)</strong> — 1 bit, bit 15 — specifies <em>how</em> the operand will be located (direct vs indirect).</li>
+<li><strong>Opcode field</strong> — 3 bits, bits 14–12 — specifies <em>what</em> operation to perform.</li>
+<li><strong>Address field</strong> — 12 bits, bits 11–0 — specifies <em>where</em> the operand is (register or memory location).</li>
+</ul>
+<div class="bits">
+<div class="bf mode"><b>I / Mode</b><span class="rng">bit 15</span></div>
+<div class="bf opc"><b>Opcode</b><span class="rng">bits 14–12</span></div>
+<div class="bf adr" style="flex:1"><b>Address / Operand</b><span class="rng">bits 11–0</span></div>
+</div>
+<p><span class="tag tag-clar">Clarification</span> Why split into fields at all? Because the control unit's decoder is hardware: wires 15, 14–12, and 11–0 route to different circuits. Bit 15 steers the addressing-mode logic; bits 14–12 steer the operation selector; bits 11–0 feed the address path. The field boundaries are literally where the wires go.</p>
+
+<h3>14.0 The three instruction types, decided by two levels of inspection</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> The rule from the document's closing note:</p>
+<div class="note def"><span class="nt">How the control unit classifies a 16-bit instruction</span>
+<ol>
+<li>Look at bits 14–12 (opcode): if they are <em>not</em> <code>111</code>, the instruction is a <strong>memory-reference</strong> instruction; bit 15 then selects direct (I=0) or indirect (I=1) addressing.</li>
+<li>If bits 14–12 <em>are</em> <code>111</code>, look at bit 15:
+  <ul><li>I = 0 → <strong>register-reference</strong> instruction.</li>
+  <li>I = 1 → <strong>input/output</strong> instruction.</li></ul></li>
+</ol>
+In both non-memory cases, the 12 address bits specify a register operation or an I/O operation instead of a memory address.</div>
+
+<figure class="svgbox">
+<svg viewBox="0 0 780 300" width="100%" style="max-width:780px" role="img" aria-label="Decision tree for classifying a 16-bit instruction">
+<rect x="240" y="20" width="300" height="44" rx="8" fill="#dbeafe" stroke="#1b2a4a" stroke-width="2"/>
+<text x="390" y="39" text-anchor="middle" font-size="13" font-weight="bold">Read opcode bits 14–12</text>
+<text x="390" y="55" text-anchor="middle" font-size="11" fill="#5b6472">first level of inspection</text>
+<line x1="220" y1="64" x2="120" y2="110" stroke="#2563eb" stroke-width="2"/>
+<line x1="560" y1="64" x2="660" y2="110" stroke="#2563eb" stroke-width="2"/>
+<text x="150" y="84" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f766e">000 … 110</text>
+<text x="630" y="84" text-anchor="middle" font-size="12" font-weight="bold" fill="#991b1b">111</text>
+<rect x="20" y="112" width="260" height="70" rx="8" fill="#dcfce7" stroke="#1b2a4a" stroke-width="2"/>
+<text x="150" y="135" text-anchor="middle" font-size="13" font-weight="bold">MEMORY-REFERENCE</text>
+<text x="150" y="152" text-anchor="middle" font-size="11">12 bits = memory address</text>
+<text x="150" y="168" text-anchor="middle" font-size="11">I=0 direct · I=1 indirect</text>
+<rect x="440" y="112" width="320" height="44" rx="8" fill="#ffe4e6" stroke="#1b2a4a" stroke-width="2"/>
+<text x="600" y="131" text-anchor="middle" font-size="13" font-weight="bold">Now inspect bit 15 (mode bit)</text>
+<text x="600" y="147" text-anchor="middle" font-size="11" fill="#5b6472">second level of inspection</text>
+<line x1="520" y1="156" x2="420" y2="205" stroke="#2563eb" stroke-width="2"/>
+<line x1="680" y1="156" x2="740" y2="205" stroke="#2563eb" stroke-width="2"/>
+<text x="420" y="178" text-anchor="middle" font-size="12" font-weight="bold" fill="#0f766e">I = 0</text>
+<text x="750" y="178" text-anchor="middle" font-size="12" font-weight="bold" fill="#991b1b">I = 1</text>
+<rect x="220" y="205" width="260" height="70" rx="8" fill="#ecfdf5" stroke="#1b2a4a" stroke-width="2"/>
+<text x="350" y="228" text-anchor="middle" font-size="13" font-weight="bold">REGISTER-REFERENCE</text>
+<text x="350" y="245" text-anchor="middle" font-size="11">operate on AC / registers</text>
+<text x="350" y="261" text-anchor="middle" font-size="11">e.g. CMA, INC, CLA</text>
+<rect x="510" y="205" width="260" height="70" rx="8" fill="#ecfeff" stroke="#1b2a4a" stroke-width="2"/>
+<text x="640" y="228" text-anchor="middle" font-size="13" font-weight="bold">INPUT / OUTPUT</text>
+<text x="640" y="245" text-anchor="middle" font-size="11">talk to ports / devices</text>
+<text x="640" y="261" text-anchor="middle" font-size="11">e.g. IN, OUT</text>
+</svg>
+<figcaption>Fig 14.1 — How the control unit decodes the instruction type from bits 15 and 14–12.</figcaption>
+</figure>
+
+<h3 id="reg-ref">14.1 · Register-Reference Instructions — <code>opcode = 111, I = 0</code></h3>
+<p><span class="tag tag-src">From Lecture Notes</span> "Register-reference instructions are a class of instructions designed to <em>operate directly on the processor's registers, without accessing memory</em>," used for data transfer, arithmetic, logical operations, and control tasks within the CPU. Hallmarks from the notes: <em>direct register access</em>, <em>efficient execution</em> (no memory-access cycles), and <em>simpler encoding</em>. They are "represented by opcode 111 with a 0 in the leftmost bit (bit 15)" and "specify an operation on or a test of the AC (accumulator) register."</p>
+<div class="bits">
+<div class="bf mode"><b>0</b><span class="rng">bit 15 (I)</span></div>
+<div class="bf opc"><b>111</b><span class="rng">bits 14–12</span></div>
+<div class="bf adr" style="flex:1"><b>register operation code</b><span class="rng">bits 11–0 (e.g. which op on AC)</span></div>
+</div>
+<h4>Examples from the notes</h4>
+<pre><code><span class="c">; 8085 (accumulator-based):</span>
+<span class="m">CMA</span>      <span class="c">; complement the accumulator — flip every bit of A</span>
+<span class="m">RLC</span>      <span class="c">; rotate the accumulator left — MSB wraps to LSB</span>
+<span class="c">; x86 (general-purpose registers):</span>
+<span class="m">MOV</span> AX, BX  <span class="c">; copy BX into AX</span>
+<span class="m">INC</span> AX      <span class="c">; AX ← AX + 1</span></code></pre>
+<h4>Actual register-state trace</h4>
+<div class="twrap"><table class="state-table">
+<tr><th>Instruction</th><th>A / AX before</th><th>A / AX after</th><th>Memory touched?</th></tr>
+<tr><td><code>CMA</code></td><td><code>3CH</code> (0011 1100)</td><td><code>C3H</code> (1100 0011)</td><td>No</td></tr>
+<tr><td><code>RLC</code></td><td><code>81H</code> (1000 0001)</td><td><code>03H</code> (0000 0011)</td><td>No</td></tr>
+<tr><td><code>MOV AX, BX</code> (BX=27H)</td><td><code>00H</code></td><td><code>27H</code></td><td>No</td></tr>
+<tr><td><code>INC AX</code></td><td><code>27H</code></td><td><code>28H</code></td><td>No</td></tr>
+</table></div>
+<div class="cmp2">
+<div class="col"><h5>Advantages (from notes)</h5><ul>
+<li><strong>Faster execution</strong> — registers are faster to access than memory.</li>
+<li><strong>Reduced memory bottleneck</strong> — fewer memory accesses shorten overall processing time.</li>
+<li><strong>Compact encoding</strong> — register operations use shorter formats.</li>
+</ul></div>
+<div class="col"><h5>Disadvantages (from notes)</h5><ul>
+<li><strong>Limited scope</strong> — operate only on register data; extra load/store instructions raise the instruction count.</li>
+<li><strong>Register dependency</strong> — architectures with few registers can run out of them.</li>
+<li><strong>Complex register management</strong> — multi-register juggling raises programming complexity and errors.</li>
+</ul></div>
+</div>
+<p><span class="tag tag-ext">External Research</span> For reference, in Mano's basic computer these are the canonical register-reference instructions (hex = full 16-bit word): CLA <code>7800H</code> (clear AC), CLE <code>7400H</code> (clear E flag), CMA <code>7200H</code> (complement AC), CME <code>7100H</code> (complement E), CIR <code>7080H</code> (circulate right), CIL <code>7040H</code> (circulate left), INC <code>7020H</code> (increment AC), SPA <code>7010H</code> (skip if AC positive), SNA <code>7008H</code> (skip if AC negative), SZA <code>7004H</code> (skip if AC zero), SZE <code>7002H</code> (skip if E zero), HLT <code>7001H</code>. Notice <em>all</em> begin with <code>7</code> = <code>0111</code>: bit15=0, opcode=111. The architecture proves the decoding rule in hardware. (Mano, <em>Computer System Architecture</em>, 3rd ed.)</p>
+
+<h3 id="mem-ref">14.2 · Memory-Reference Instructions — <code>opcode = 000 … 110</code></h3>
+<p><span class="tag tag-src">From Lecture Notes</span> "Memory-reference instructions perform operations involving data stored in <em>main memory</em>. They interact with the memory unit, making them <em>slower</em> than register-reference instructions due to the additional memory-access time. The format typically includes a memory address or a mechanism to compute one (direct, indirect addressing). Primary operations: reading data from memory, writing data to memory, and operations where one or more operands are in memory." In this instruction type "12 bits specify a memory address and one bit (I) specifies the addressing mode."</p>
+<div class="bits">
+<div class="bf mode"><b>I</b><span class="rng">bit 15: 0=direct, 1=indirect</span></div>
+<div class="bf opc"><b>000…110</b><span class="rng">bits 14–12: one of 7 opcodes</span></div>
+<div class="bf adr" style="flex:1"><b>12-bit memory address</b><span class="rng">bits 11–0</span></div>
+</div>
+<h4>Examples from the notes</h4>
+<pre><code><span class="c">; 8085:</span>
+<span class="m">LDA</span> <span class="n">2000H</span>  <span class="c">; AC ← M[2000H] — load accumulator</span>
+<span class="m">STA</span> <span class="n">3000H</span>  <span class="c">; M[3000H] ← AC — store accumulator</span>
+<span class="m">ADD</span> M        <span class="c">; AC ← AC + M[HL] — add the cell pointed by the HL pair</span>
+<span class="c">; x86:</span>
+<span class="m">MOV</span> AX, [<span class="n">1000H</span>]   <span class="c">; AX ← M[1000H]</span>
+<span class="m">MOV</span> [<span class="n">2000H</span>], BX   <span class="c">; M[2000H] ← BX</span></code></pre>
+<h4>Data movement, graphically</h4>
+<div class="flow" style="align-items:flex-start">
+<div class="fbox">LOAD: Memory cell M[2000H]</div>
+<div class="farrow">↓ data bus</div>
+<div class="fbox">→ CPU register (AC / AX) — memory keeps its value (a copy, not a move)</div>
+</div>
+<div class="flow" style="align-items:flex-start">
+<div class="fbox">STORE: CPU register (AC / AX)</div>
+<div class="farrow">↓ data bus</div>
+<div class="fbox">→ Memory cell M[3000H] — cell overwritten; register keeps its value</div>
+</div>
+<div class="cmp2">
+<div class="col"><h5>Advantages (from notes)</h5><ul>
+<li><strong>Flexibility</strong> — operate on large datasets that cannot fit in registers.</li>
+<li><strong>Support complex operations</strong> — arrays, structures, dynamic data.</li>
+</ul></div>
+<div class="col"><h5>Disadvantages (from notes)</h5><ul>
+<li><strong>Slower execution</strong> — memory access is slower than register access.</li>
+<li><strong>Higher power consumption</strong> — memory operations consume more energy.</li>
+</ul></div>
+</div>
+
+<h3 id="io-ref">14.3 · Input/Output (I/O) Instructions — <code>opcode = 111, I = 1</code></h3>
+<p><span class="tag tag-src">From Lecture Notes</span> "I/O instructions transfer data between the processor and <em>peripheral devices</em> — keyboards, printers, displays, storage. They enable communication between the CPU and I/O devices through <em>I/O ports</em>." Two addressing schemes from the notes: <strong>port-based addressing</strong> (specific I/O port addresses) and <strong>memory-mapped I/O</strong> (device registers appear as memory addresses). Three modes of data transfer (to be detailed in a later unit): <strong>programmed I/O, interrupt-driven I/O, and DMA</strong>.</p>
+<div class="bits">
+<div class="bf mode"><b>1</b><span class="rng">bit 15 (I)</span></div>
+<div class="bf opc"><b>111</b><span class="rng">bits 14–12</span></div>
+<div class="bf adr" style="flex:1"><b>I/O operation code</b><span class="rng">bits 11–0</span></div>
+</div>
+<p>"Just like the register-reference instruction, an I/O instruction <em>does not need a reference to memory</em> and is recognised by opcode 111 with a 1 in the leftmost bit. The remaining 12 bits specify the type of input-output operation or test."</p>
+<h4>The cast of characters</h4>
+<div class="twrap"><table>
+<tr><th>Term</th><th>Meaning</th></tr>
+<tr><td><strong>Peripheral</strong></td><td>Any external device: keyboard, disk, printer, sensor.</td></tr>
+<tr><td><strong>I/O port</strong></td><td>A numbered doorway the CPU uses to reach a device's registers.</td></tr>
+<tr><td><strong>Programmed I/O</strong></td><td>CPU polls the device in a loop ("ready yet? …ready yet?") — simple but wastes CPU time.</td></tr>
+<tr><td><strong>Interrupt-driven I/O</strong></td><td>Device raises an interrupt line when ready; CPU runs other work meanwhile and responds.</td></tr>
+<tr><td><strong>DMA (Direct Memory Access)</strong></td><td>A dedicated controller moves whole blocks between device and memory <em>without</em> the CPU; the CPU is only told when it is done.</td></tr>
+<tr><td><strong>Port-based (I/O-mapped)</strong></td><td>Separate address space for ports; IN/OUT instructions used (Intel style).</td></tr>
+<tr><td><strong>Memory-mapped I/O</strong></td><td>Device registers get regular memory addresses; normal load/store used (Motorola style).</td></tr>
+</table></div>
+<h4>Examples from the notes</h4>
+<pre><code><span class="c">; 8085:</span>
+<span class="m">IN</span>  <span class="n">05H</span>   <span class="c">; read data from port 05H into the accumulator</span>
+<span class="m">OUT</span> <span class="n">06H</span>   <span class="c">; write the accumulator to port 06H</span>
+<span class="c">; x86:</span>
+<span class="m">IN</span>  AL, DX   <span class="c">; read the port whose number is in DX into AL</span>
+<span class="m">OUT</span> DX, AL   <span class="c">; write AL to the port whose number is in DX</span></code></pre>
+<div class="cmp2">
+<div class="col"><h5>Advantages (from notes)</h5><ul>
+<li><strong>Efficient data management</strong> — simplifies device communication.</li>
+<li><strong>Flexibility</strong> — multiple addressing schemes and transfer modes.</li>
+<li><strong>Reduced latency</strong> — via interrupt-driven I/O and DMA.</li>
+</ul></div>
+<div class="col"><h5>Disadvantages (from notes)</h5><ul>
+<li><strong>Programmed I/O overhead</strong> — polling wastes CPU time.</li>
+<li><strong>Complexity</strong> — managing many devices is challenging.</li>
+<li><strong>Dependency</strong> — device-specific instructions limit portability.</li>
+</ul></div>
+</div>
+<div class="note key"><span class="nt">Why I/O instructions exist</span> Without them, the CPU would have no way to reach the outside world: every keyboard press, disk read, and screen pixel crosses exactly this kind of instruction (or a DMA engine that replaces it). They are the third category in the 16-bit model precisely because I/O traffic is neither a register operation nor a memory operation.</div>
+
+<div class="quiz"><h4>✔ Check Your Understanding</h4>
+<ol>
+<li>A 16-bit instruction has bits 14–12 = <code>101</code>, bit 15 = 1. Which type is it, and what does bit 15 mean?</li>
+<li>Bits 14–12 = <code>111</code>, bit 15 = 0: type? Give one example instruction.</li>
+<li>Why are register-reference instructions faster than memory-reference?</li>
+<li>Distinguish port-based I/O from memory-mapped I/O.</li>
+<li>Which I/O transfer mode frees the CPU from moving data entirely?</li>
+</ol>
+<details><summary>Show answers</summary><div class="dbody">
+<ol>
+<li>Memory-reference (opcode ≠ 111); bit 15 = 1 means <em>indirect</em> addressing — the 12-bit field points to a cell holding the effective address.</li>
+<li>Register-reference; e.g., CMA / CLA / INC / HLT (or x86 MOV AX, BX, INC AX).</li>
+<li>No memory-access cycle is needed — registers are inside the CPU.</li>
+<li>Port-based: devices live in a separate port address space, reached with IN/OUT. Memory-mapped: device registers occupy normal memory addresses, reached with ordinary load/store.</li>
+<li>DMA — a controller transfers whole blocks directly between device and memory.</li>
+</ol>
+</div></details>
+</div>
+</section>
+
+<section class="chapter" id="classification">
+<h2>15 · Instruction Set Classification <span class="small">(Lecture 1.3.4)</span></h2>
+<p><span class="tag tag-src">From Lecture Notes</span> "The instruction set of any processor broadly fits into categories. The <em>first five are mandatory</em>; the <em>next four</em> are generally available in advanced/new-generation processors. The number of instructions in a processor may range from under 100 to a few hundred; a large instruction set does <em>not</em> imply a powerful processor — often, variants of each instruction are added for downward compatibility within a processor family. Examples below are mnemonic code; <code>R</code> means a CPU register; named words (e.g., <code>Total</code>) are variables; they pertain to no particular CPU."</p>
+
+<h3>The nine categories</h3>
+<h4>1 · Data Movement (mandatory)</h4>
+<p>Move data register↔register, register↔memory (some CPUs even memory↔memory). Named "Move" or "Load/Store". <em>Most frequently used by the CPU while executing program code.</em></p>
+<pre><code><span class="m">Move</span>  R1, Total    <span class="c">; R1 ← Total (memory → register)</span>
+<span class="m">Move</span>  Total, R1    <span class="c">; Total ← R1 (register → memory)</span>
+<span class="m">Load</span>  R1, Total    <span class="c">; load form of the same idea</span>
+<span class="m">Store</span> R1, Total    <span class="c">; store form</span></code></pre>
+<h4>2 · Arithmetic and Logical (mandatory)</h4>
+<p>Minimum set: ADD, SUB, AND, OR, XOR, SHIFT. Multiply/divide <em>can</em> be emulated by repeated addition/subtraction (and were, in early systems), but hardware MULTIPLY/DIV is more efficient and is standard now. Logical instructions implement condition checking for <code>for</code>/<code>while</code> loops and <code>if</code>. Condition codes (ZSOC) set after each — same as Section 13.</p>
+<pre><code><span class="m">ADD</span>  R1, Total        <span class="c">; R1 ← R1 + Total (two-address)</span>
+<span class="m">ADD</span>  R1, R2, R3       <span class="c">; R1 ← R2 + R3 (three-address)</span>
+<span class="m">XOR</span>  R4, Total        <span class="c">; R4 ← R4 XOR Total</span>
+<span class="m">MUL</span>  R4, MARKS        <span class="c">; R4 ← R4 × MARKS</span></code></pre>
+<h4>3 · Transfer / Control (mandatory)</h4>
+<p>Change program flow: BRANCH/JMP plus condition-code flags; subroutine CALLs and RETURNS.</p>
+<pre><code><span class="m">JMP</span>  LABLE1   <span class="c">; jump</span>
+<span class="m">JNZ</span>  LABLE1   <span class="c">; jump if not zero</span>
+<span class="m">BZ</span>   LABLE2   <span class="c">; branch if zero</span>
+<span class="m">BNE</span>  LABLE3   <span class="c">; branch if not equal</span></code></pre>
+<h4>4 · Input/Output (mandatory)</h4>
+<p><em>Two ways</em> to do I/O: the <strong>Intel family</strong> uses IN and OUT instructions on numbered <em>ports</em> ("I/O-mapped I/O"); the <strong>Motorola family</strong> assigns <em>memory addresses</em> to I/O registers and uses ordinary data-movement instructions ("memory-mapped I/O").</p>
+<pre><code><span class="m">IN</span>   Port#232      <span class="c">; read port 232</span>
+<span class="m">OUT</span>  Port#234      <span class="c">; write port 234</span>
+<span class="m">Move</span> R1, #FFEEEE   <span class="c">; memory-mapped: write to the register at address FFEEEE</span></code></pre>
+<h4>5 · Miscellaneous (mandatory)</h4>
+<p>NOP (dummy but useful), HALT (stops the system, e.g. on "shutdown"), INT (user-defined interrupts activated by instruction). System control is grouped here or with control instructions.</p>
+<pre><code><span class="m">HALT</span>
+<span class="m">NOP</span>
+<span class="m">INT</span></code></pre>
+<h4>6 · Floating-Point (advanced)</h4>
+<p>Specialised hardware, working <em>independently of the CPU core</em>, performs floating-point arithmetic efficiently; unique opcodes drive it.</p>
+<pre><code><span class="m">FLD</span>    <span class="c">; floating-point load</span>
+<span class="m">FST</span>    <span class="c">; floating-point store</span>
+<span class="m">FADD</span>   <span class="c">; floating-point add</span>
+<span class="m">FSUB</span>   <span class="c">; floating-point subtract</span>
+<span class="m">FMUL</span>   <span class="c">; floating-point multiply</span></code></pre>
+<h4>7 · Binary-Coded-Decimal (advanced)</h4>
+<p>Dedicated decimal hardware speeds up decimal calculations; without it, every operation would require binary↔decimal conversion. Like floating point, special decimal hardware and opcodes exist.</p>
+<h4>8 · Vector (advanced)</h4>
+<p>Specific to display/graphics: zoom, resize, flip and matrix operations need heavy vector calculations, so vector instructions operate on whole arrays at once.</p>
+<h4>9 · Emulated (rare)</h4>
+<p>User-defined opcode and operation; very few CPUs support this.</p>
+<div class="note warn"><span class="nt">Purpose ≠ Format</span> Categories 1–9 classify instructions by <em>what they do</em> (purpose). Sections 17–19 classify instructions by <em>how they are encoded in bits</em> (format). An <code>ADD</code> is "arithmetic" by purpose <em>and</em> maybe "two-address" by format. Mixing these two axes is a classic exam trap.</div>
+</section>
+
+<section class="chapter" id="risc-cisc">
+<h2>16 · RISC vs CISC</h2>
+<p><span class="tag tag-src">From Lecture Notes</span> "CPU architecture design differs radically based on the <em>size of the instruction set</em>, giving two categories: <strong>Reduced Instruction Set Computer (RISC)</strong> and <strong>Complex Instruction Set Computer (CISC)</strong>. RISC has fewer instructions; CISC has a large number. Both are equally functionally complete. MIPS, ALPHA, PA-RISC, Intel i860, Motorola 88000, ARM are RISC CPUs. Intel x86, Motorola 68K, VAX are CISC CPUs. The trade-off is between <em>size of program code</em> and <em>simplicity of decoding by hardware</em>."</p>
+<div class="twrap"><table>
+<tr><th>Aspect</th><th>RISC</th><th>CISC</th></tr>
+<tr><td>Instruction count</td><td>Small, lean set</td><td>Large, rich set</td></tr>
+<tr><td>Instruction length</td><td>Usually fixed (easy decode)</td><td>Variable (compact code)</td></tr>
+<tr><td>Memory access</td><td>Only LOAD/STORE touch memory; ALU ops are register-register</td><td>Many instructions can touch memory directly</td></tr>
+<tr><td>Code size</td><td>Longer programs (more instructions per task)</td><td>Shorter programs</td></tr>
+<tr><td>Decoding hardware</td><td>Simple, fast</td><td>Complex</td></tr>
+<tr><td>Typical examples</td><td>MIPS, ARM, Alpha, PA-RISC, i860, M88000</td><td>x86, VAX, Motorola 68K</td></tr>
+</table></div>
+<div class="note warn"><span class="nt">Careful — not absolute laws</span> "RISC = fixed length" and "CISC = variable length" are strong <em>tendencies</em>, not universal rules. Some older RISC designs had variable lengths, and modern CISC chips (x86) internally translate variable-length instructions into fixed-size micro-operations. Present this accurately in exams: the trade-off named in the notes — <em>code size vs decode simplicity</em> — is the real point.</div>
+</section>
+
+<section class="chapter" id="instr-format">
+<h2>17 · Instruction Format Basics</h2>
+<p><span class="tag tag-src">From Lecture Notes</span> "The <strong>Instruction Set Format</strong> defines how an instruction is structured — the arrangement of fields that encode information for the processor. <em>Encoding of instructions is called Instruction Format.</em>"</p>
+<h3>17.1 The basic fields</h3>
+<div class="twrap"><table>
+<tr><th>Field</th><th>Role (from the notes)</th><th>Examples</th></tr>
+<tr><td><strong>Opcode</strong></td><td>Specifies the operation to be performed; determines the type (arithmetic, logical, data transfer…)</td><td>ADD, SUB, MOV</td></tr>
+<tr><td><strong>Operand(s)</strong></td><td>Specify the data to be used — registers, memory addresses (direct/indirect), or immediate constants</td><td>AX, M[2000H], 55H</td></tr>
+<tr><td><strong>Addressing mode</strong></td><td>Defines how the operand is interpreted (immediate, direct, indirect, indexed…)</td><td>the <code>#</code> in <code>MOV A,#55H</code></td></tr>
+<tr><td><strong>Instruction length</strong></td><td>The number of bits used for the whole instruction (16-bit, 32-bit, 64-bit…)</td><td>fixed 32-bit in MIPS; 1–15 bytes in x86</td></tr>
+</table></div>
+<h3>17.2 Source vs destination operand</h3>
+<p><span class="tag tag-clar">Clarification</span> In multi-operand instructions, operands have roles: the <strong>source</strong> supplies data, the <strong>destination</strong> receives the result. In <code>ADD R1, R2, R3</code> (three-address), R2 and R3 are sources, R1 is destination. In <code>ADD R1, R2</code> (two-address), R1 is <em>both</em> source and destination — an economy that matters below.</p>
+<h3>17.3 Key design considerations (from the notes)</h3>
+<ol>
+<li><strong>Length</strong> — shorter instructions save memory but limit functionality; longer ones encode more.</li>
+<li><strong>Number of operands</strong> — affects instruction size and flexibility; zero to three operands are common.</li>
+<li><strong>Addressing modes</strong> — determine how operands are accessed, influencing complexity.</li>
+<li><strong>Ease of decoding</strong> — fixed-length formats simplify decoding but may waste memory; variable-length formats save memory but complicate decoding.</li>
+</ol>
+</section>
+
+<section class="chapter" id="fixed-variable">
+<h2>18 · Fixed-Length vs Variable-Length Formats</h2>
+<h3>18.1 Fixed-length (from the notes)</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> "RISC uses fixed-length encoding in which <em>each instruction occupies the same amount of space</em>, irrespective of the opcode. It <strong>simplifies instruction decoding</strong>. Example: the MIPS series — a RISC processor with only 3 format variants, all the same word length; also, registers (not memory) are used for referencing operands."</p>
+<p><span class="tag tag-ext">External Research</span> The MIPS formats are the textbook example (MIPS documentation):</p>
+<div class="bits">
+<div class="bf opc"><b>opcode</b><span class="rng">6 bits</span></div>
+<div class="bf adr"><b>rs</b><span class="rng">5 bits</span></div>
+<div class="bf adr"><b>rt</b><span class="rng">5 bits</span></div>
+<div class="bf adr"><b>rd</b><span class="rng">5 bits</span></div>
+<div class="bf adr"><b>shamt</b><span class="rng">5 bits</span></div>
+<div class="bf adr"><b>funct</b><span class="rng">6 bits</span></div>
+</div>
+<p class="small" style="margin-top:2px">MIPS R-type (register) format — always exactly 32 bits. The I-type replaces rd/shamt/funct with a 16-bit immediate; J-type with a 26-bit jump address. Same length, three layouts.</p>
+<div class="cmp2">
+<div class="col"><h5>Advantages</h5><ul>
+<li>Decoder always knows where fields sit → simple, fast, pipeline-friendly.</li>
+<li>PC advances by a constant → trivial next-address computation.</li>
+</ul></div>
+<div class="col"><h5>Disadvantages</h5><ul>
+<li>Wastes space on simple instructions (padding bits).</li>
+<li>Limited flexibility in what one instruction can express.</li>
+</ul></div>
+</div>
+
+<h3>18.2 Variable-length (from the notes)</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> "CISC uses variable-length encoding in which each instruction occupies <em>only the space required to convey its operands</em> — no redundant memory use. It allows compact representation but complicates decoding. Example: the Motorola M6800 CISC CPU." The notes describe a supporting figure: "there are 8 ways in which the instruction is encoded, varying from 2 bytes to 8 bytes; the length differs depending on how the operand address is conveyed."</p>
+<div class="twrap"><table>
+<tr><th>Length</th><th>Reason</th></tr>
+<tr><td>2 bytes</td><td>short opcode + small operand/offset (e.g. branch offset)</td></tr>
+<tr><td>3–4 bytes</td><td>opcode + medium address/displacement</td></tr>
+<tr><td>…</td><td>more complex addressing → more operand bytes</td></tr>
+<tr><td>up to 8 bytes</td><td>opcode + full-width immediate/address fields</td></tr>
+</table></div>
+<p><span class="tag tag-clar">Clarification</span> x86 is the extreme case: instructions range from 1 byte (<code>NOP</code> = <code>0x90</code>) to 15 bytes. The decoder must read the first byte, work out how long the instruction is, and only then can it find where the <em>next</em> instruction begins — the price of compact code.</p>
+<div class="cmp2">
+<div class="col"><h5>Advantages</h5><ul>
+<li>Compact code — no padding bits wasted.</li>
+<li>Can express complex operations in one instruction.</li>
+</ul></div>
+<div class="col"><h5>Disadvantages</h5><ul>
+<li>Decoding is hard: length must be discovered per instruction.</li>
+<li>PC advance varies → complicates pipelining and branch prediction.</li>
+</ul></div>
+</div>
+<div class="note warn"><span class="nt">Not absolute laws (repeat of Section 16)</span> Associate fixed-length with RISC-style simplicity and variable-length with CISC-style compactness as <em>typical</em> relationships. Real architectures mix approaches; treat the mapping as a strong tendency, not a definition.</div>
+</section>
+<section class="chapter" id="address-formats">
+<h2>19 · Zero-, One-, Two-, Three-Address Instructions</h2>
+<p><span class="tag tag-src">From Lecture Notes</span> The document classifies instruction formats by <em>how many address fields they contain</em> and evaluates the same arithmetic expression in all four styles. (The notes write "there are three other types" but then list <em>four</em> — three-, two-, one-, and zero-address; treat the word "three" as a small editorial slip.)</p>
+
+<h3>19.1 The four formats defined</h3>
+<div class="twrap"><table>
+<tr><th>Format</th><th>Explicit operands</th><th>Typical organisation</th><th>Example (from notes)</th><th>Field layout</th></tr>
+<tr><td><strong>Three-address</strong></td><td>3 (source1, source2, destination)</td><td>General-register machines</td><td><code>ADD R1, R2, R3</code> ; R1 = R2 + R3</td><td>Opcode | Source1 | Source2 | Destination</td></tr>
+<tr><td><strong>Two-address</strong></td><td>2 — result overwrites one source</td><td>Register machines (x86 style)</td><td><code>ADD R1, R2</code> ; R1 = R1 + R2</td><td>Opcode | Source/Dest | Source</td></tr>
+<tr><td><strong>One-address</strong></td><td>1 — second operand implied (accumulator)</td><td>Accumulator machines</td><td><code>ADD A</code> ; AC = AC + A</td><td>Opcode | Address</td></tr>
+<tr><td><strong>Zero-address</strong></td><td>0 — operands implied on top of stack</td><td>Stack machines</td><td><code>ADD</code> ; TOS = (TOS−1) + TOS</td><td>Opcode only</td></tr>
+</table></div>
+
+<h4>Zero-address — stack based</h4>
+<p><span class="tag tag-clar">Clarification</span> A <strong>stack machine</strong> keeps operands on the hardware/OS stack (LIFO). <code>PUSH X</code> puts a value on top; an operation like <code>ADD</code> pops the top two values, adds them, and pushes the result. Since the operands live on the stack top, no address field is needed — instructions shrink to just the opcode. The price: extra PUSH/POP traffic and the need to track stack order carefully.</p>
+<h4>One-address — accumulator based</h4>
+<p>One <em>implied</em> accumulator supplies one operand and receives the result; the <em>explicit</em> field names the other operand. The price: constant LOAD/STORE traffic between memory and AC (accumulator organisations are covered in Lecture 2.1.1 of the same course).</p>
+<h4>Two-address — one operand doubles as destination</h4>
+<p>One field doubles as source and destination, so <code>ADD R1, R2</code> destroys R1's old value. Fewer bits than three-address, but the overwrite must be planned for (often needing a preliminary MOV).</p>
+<h4>Three-address — cleanest, costliest</h4>
+<p>Both sources and a separate destination are named: no operand is destroyed, and expressions compile to few, readable instructions. The price: wide instructions (three fields) and a bigger register file to decode.</p>
+
+<h3>19.2 The same expression in all four styles — fully traced</h3>
+<p><span class="tag tag-src">From Lecture Notes</span> The document evaluates <code>X = (A + B) × (C + D)</code> four ways. Assume A=a, B=b, C=c, D=d; we trace intermediate values symbolically, exactly as the notes lay them out.</p>
+
+<h4>A · Zero-address (stack machine)</h4>
+<pre><code><span class="m">PUSH</span> <span class="n">A</span>   <span class="c">; stack: [A]</span>
+<span class="m">PUSH</span> <span class="n">B</span>   <span class="c">; stack: [A, B]</span>
+<span class="m">ADD</span>       <span class="c">; pop B, pop A, push (A+B)   → stack: [A+B]</span>
+<span class="m">PUSH</span> <span class="n">C</span>   <span class="c">; stack: [A+B, C]</span>
+<span class="m">PUSH</span> <span class="n">D</span>   <span class="c">; stack: [A+B, C, D]</span>
+<span class="m">ADD</span>       <span class="c">; pop D, pop C, push (C+D)   → stack: [A+B, C+D]</span>
+<span class="m">MUL</span>       <span class="c">; pop both, push product     → stack: [(A+B)×(C+D)]</span>
+<span class="m">POP</span> <span class="n">X</span>    <span class="c">; M[X] ← top → stack: []</span></code></pre>
+<div class="twrap"><table class="state-table">
+<tr><th>Step</th><th>Instruction</th><th>Stack top → bottom</th><th>X in memory</th></tr>
+<tr><td>1</td><td>PUSH A</td><td>A</td><td>—</td></tr>
+<tr><td>2</td><td>PUSH B</td><td>B, A</td><td>—</td></tr>
+<tr><td>3</td><td>ADD</td><td>(A+B)</td><td>—</td></tr>
+<tr><td>4</td><td>PUSH C</td><td>C, (A+B)</td><td>—</td></tr>
+<tr><td>5</td><td>PUSH D</td><td>D, C, (A+B)</td><td>—</td></tr>
+<tr><td>6</td><td>ADD</td><td>(C+D), (A+B)</td><td>—</td></tr>
+<tr><td>7</td><td>MUL</td><td>(A+B)×(C+D)</td><td>—</td></tr>
+<tr><td>8</td><td>POP X</td><td>(empty)</td><td>(A+B)×(C+D)</td></tr>
+</table></div>
+
+<h4>B · One-address (accumulator machine)</h4>
+<pre><code><span class="m">LOAD</span> <span class="n">A</span>    <span class="c">; AC = A</span>
+<span class="m">ADD</span>  <span class="n">B</span>    <span class="c">; AC = AC + B = A+B</span>
+<span class="m">STORE</span> <span class="n">T</span>  <span class="c">; M[T] = AC (save partial result!)</span>
+<span class="m">LOAD</span> <span class="n">C</span>    <span class="c">; AC = C</span>
+<span class="m">ADD</span>  <span class="n">D</span>    <span class="c">; AC = C+D</span>
+<span class="m">MUL</span>  <span class="n">T</span>    <span class="c">; AC = AC × M[T] = (C+D)×(A+B)</span>
+<span class="m">STORE</span> <span class="n">X</span>  <span class="c">; M[X] = AC</span></code></pre>
+<div class="twrap"><table class="state-table">
+<tr><th>Step</th><th>Instruction</th><th>AC</th><th>M[T]</th><th>M[X]</th></tr>
+<tr><td>1</td><td>LOAD A</td><td>A</td><td>—</td><td>—</td></tr>
+<tr><td>2</td><td>ADD B</td><td>A+B</td><td>—</td><td>—</td></tr>
+<tr><td>3</td><td>STORE T</td><td>A+B</td><td>A+B</td><td>—</td></tr>
+<tr><td>4</td><td>LOAD C</td><td>C</td><td>A+B</td><td>—</td></tr>
+<tr><td>5</td><td>ADD D</td><td>C+D</td><td>A+B</td><td>—</td></tr>
+<tr><td>6</td><td>MUL T</td><td>(C+D)×(A+B)</td><td>A+B</td><td>—</td></tr>
+<tr><td>7</td><td>STORE X</td><td>(unch)</td><td>A+B</td><td>(A+B)×(C+D)</td></tr>
+</table></div>
+<div class="note key"><span class="nt">Notice the temporary T</span> An accumulator machine has only one "hand", so the partial sum (A+B) must be parked in memory before the second sum begins. That forced STORE/LOAD traffic is the one-address machine's weakness.</div>
+
+<h4>C · Two-address (register machine)</h4>
+<pre><code><span class="m">MOV</span> R1, <span class="n">A</span>     <span class="c">; R1 = A</span>
+<span class="m">ADD</span> R1, <span class="n">B</span>     <span class="c">; R1 = R1 + B</span>
+<span class="m">MOV</span> R2, <span class="n">C</span>     <span class="c">; R2 = C</span>
+<span class="m">ADD</span> R2, <span class="n">D</span>     <span class="c">; R2 = R2 + D</span>
+<span class="m">MUL</span> R1, R2    <span class="c">; R1 = R1 × R2</span>
+<span class="m">MOV</span> <span class="n">X</span>, R1     <span class="c">; M[X] = R1</span></code></pre>
+<div class="twrap"><table class="state-table">
+<tr><th>Step</th><th>Instruction</th><th>R1</th><th>R2</th><th>M[X]</th></tr>
+<tr><td>1</td><td>MOV R1, A</td><td>A</td><td>—</td><td>—</td></tr>
+<tr><td>2</td><td>ADD R1, B</td><td>A+B</td><td>—</td><td>—</td></tr>
+<tr><td>3</td><td>MOV R2, C</td><td>A+B</td><td>C</td><td>—</td></tr>
+<tr><td>4</td><td>ADD R2, D</td><td>A+B</td><td>C+D</td><td>—</td></tr>
+<tr><td>5</td><td>MUL R1, R2</td><td>(A+B)×(C+D)</td><td>C+D</td><td>—</td></tr>
+<tr><td>6</td><td>MOV X, R1</td><td>(unch)</td><td>(unch)</td><td>(A+B)×(C+D)</td></tr>
+</table></div>
+
+<h4>D · Three-address (register machine)</h4>
+<pre><code><span class="m">ADD</span> R1, <span class="n">A</span>, <span class="n">B</span>    <span class="c">; R1 = A + B</span>
+<span class="m">ADD</span> R2, <span class="n">C</span>, <span class="n">D</span>    <span class="c">; R2 = C + D</span>
+<span class="m">MUL</span> X, R1, R2     <span class="c">; M[X] = R1 × R2</span></code></pre>
+<div class="twrap"><table class="state-table">
+<tr><th>Step</th><th>Instruction</th><th>R1</th><th>R2</th><th>M[X]</th></tr>
+<tr><td>1</td><td>ADD R1, A, B</td><td>A+B</td><td>—</td><td>—</td></tr>
+<tr><td>2</td><td>ADD R2, C, D</td><td>A+B</td><td>C+D</td><td>—</td></tr>
+<tr><td>3</td><td>MUL X, R1, R2</td><td>(unch)</td><td>(unch)</td><td>(A+B)×(C+D)</td></tr>
+</table></div>
+
+<h3>19.3 Comparison (revision table)</h3>
+<div class="twrap"><table>
+<tr><th>Format</th><th>Instructions needed for X=(A+B)(C+D)</th><th>Advantage</th><th>Disadvantage</th></tr>
+<tr><td>Zero-address</td><td>8 (with POP X)</td><td>Shortest instructions (opcode only); no register management</td><td>Extra PUSH/POP traffic; stack order bugs; not suited to random access</td></tr>
+<tr><td>One-address</td><td>7</td><td>Simple, cheap hardware; one implied operand</td><td>Temporary memory parking (T) needed; serial dependence on AC</td></tr>
+<tr><td>Two-address</td><td>6</td><td>Registers remove memory traffic; reasonably compact code</td><td>One source destroyed per operation; MOV preludes common</td></tr>
+<tr><td>Three-address</td><td>3</td><td>Cleanest, shortest programs; no operand destroyed</td><td>Widest instructions; needs more register/port hardware</td></tr>
+</table></div>
+
+<div class="quiz"><h4>✔ Check Your Understanding</h4>
+<ol>
+<li>Why does the zero-address format need no operand fields?</li>
+<li>In the one-address trace, why is <code>STORE T</code> unavoidable?</li>
+<li>In <code>ADD R1, R2</code> (two-address), which operand is destroyed?</li>
+<li>Order the four formats by instructions needed for X=(A+B)·(C+D) (fewest first).</li>
+</ol>
+<details><summary>Show answers</summary><div class="dbody">
+<ol>
+<li>Operands are implied at the top of the stack — the machine always pops the top one/two values.</li>
+<li>The accumulator can hold only one value; (A+B) must be saved to memory before AC is reused for (C+D).</li>
+<li>R1 — it is source <em>and</em> destination. Its old value is overwritten by the sum.</li>
+<li>Three-address (3) → two-address (6) → one-address (7) → zero-address (8), for this expression.</li>
+</ol>
+</div></details>
+</div>
+</section>
+<section class="chapter" id="problems">
+<h2>20 · Problem Solving</h2>
+<p>This section collects every numerical problem from the lecture document (Q1–Q4, fully worked in Section 8.6) and adds graded practice covering clock period/frequency, T-states, machine cycles, bus cycles, wait states, instruction execution time, effective-address calculations, and instruction-format bit allocation.</p>
+
+<h3>Part A — Timing problems (P1–P5, increasing difficulty)</h3>
+<div class="prob"><h4>Practice P1</h4>
+<p><em>A CPU runs at 4 MHz. What is the duration of one T-state?</em></p>
+<div class="step"><b>Given:</b> f = 4 MHz. <b>Required:</b> T-state time.</div>
+<div class="step"><b>Formula:</b> T = 1/f. <b>Substitution:</b> 1 / 4,000,000 = 0.25 × 10⁻⁶ s. <b>Answer:</b> <mark>0.25 µs (250 ns)</mark></div>
+<div class="step"><b>Practice twin (try yourself):</b> at 6 MHz → 1/6,000,000 ≈ 0.167 µs = 167 ns.</div>
+</div>
+<div class="prob"><h4>Practice P2</h4>
+<p><em>An opcode-fetch machine cycle contains 6 T-states at 2.5 MHz. How long does it take?</em></p>
+<div class="step"><b>Given:</b> 6 T-states; f = 2.5 MHz. <b>Required:</b> time.</div>
+<div class="step"><b>Formula:</b> time = n × (1/f). <b>Calculation:</b> T-state = 1/2.5 MHz = 0.4 µs; 6 × 0.4 = 2.4 µs. <b>Answer:</b> <mark>2.4 µs</mark></div>
+<div class="step"><b>Practice twin:</b> 5 T-states at 1 MHz → 5 × 1 µs = 5 µs.</div>
+</div>
+<div class="prob"><h4>Practice P3</h4>
+<p><em>A memory-write bus cycle normally takes 4 T-states, but a slow peripheral inserts 3 wait states. Clock period = 0.5 µs. Find the total time.</em></p>
+<div class="step"><b>Given:</b> 4 + 3 = 7 T-states; 0.5 µs each. <b>Calculation:</b> 7 × 0.5 = 3.5 µs. <b>Answer:</b> <mark>3.5 µs</mark></div>
+<div class="step"><b>Why:</b> each wait state adds exactly one T-state (see Q3, Section 8.6).</div>
+</div>
+<div class="prob"><h4>Practice P4</h4>
+<p><em>An instruction uses 4 machine cycles: opcode fetch (6 T), memory read (4 T), memory read (4 T), memory write (3 T). Clock = 2 MHz. Find total T-states, bus cycles, and execution time.</em></p>
+<div class="step"><b>T-states:</b> 6+4+4+3 = 17. <b>Bus cycles:</b> 4 (one per machine cycle). <b>Time:</b> 17 × 0.5 µs = <mark>8.5 µs</mark></div>
+<div class="step"><b>Why:</b> this mirrors Q2 of the notes — machine cycles and bus cycles coincide when each operation is a single transaction.</div>
+</div>
+<div class="prob"><h4>Practice P5 (hardest)</h4>
+<p><em>An instruction takes 21 T-states and executes in 4.2 µs. (a) Find the clock frequency. (b) How many wait states are in this instruction if its minimum is 18 T-states?</em></p>
+<div class="step"><b>(a)</b> T-state = 4.2 µs / 21 = 0.2 µs → f = 1/(0.2 × 10⁻⁶) = <mark>5 MHz</mark>.</div>
+<div class="step"><b>(b)</b> 21 − 18 = <mark>3 wait states</mark>.</div>
+<div class="step"><b>Why:</b> same reciprocal trick as Q4 of the notes; wait states inflate the minimum T-state count.</div>
+</div>
+
+<h3>Part B — Effective-address calculations (P6–P8)</h3>
+<div class="prob"><h4>Practice P6</h4>
+<p><em>Index register X = 07H; instruction address field = 3A0H; M[3A7H] = 66H. (a) EA = ? (b) What value is loaded by an indexed LOAD?</em></p>
+<div class="step"><b>(a)</b> EA = 3A0H + 07H = <mark>3A7H</mark>. <b>(b)</b> operand = M[3A7H] = <mark>66H</mark>. Classic indexed mode (Section 10.8).</div>
+</div>
+<div class="prob"><h4>Practice P7</h4>
+<p><em>Given M[40H] = 99H and M[99H] = 21H. An instruction's address field is 40H. Find the EA and the loaded value under (a) direct mode, (b) indirect mode.</em></p>
+<div class="step"><b>(a) Direct:</b> EA = 40H → value = M[40H] = <mark>99H</mark>. <b>(b) Indirect:</b> EA = M[40H] = 99H → value = M[99H] = <mark>21H</mark>. Same bits, different rule — exactly why the mode bit exists.</div>
+</div>
+<div class="prob"><h4>Practice P8</h4>
+<p><em>A branch instruction uses relative mode. At execution, PC (next instruction) = 150H; signed displacement = −30H. Where does control go?</em></p>
+<div class="step">EA = 150H + (−30H) = <mark>120H</mark> — a backward branch, e.g. a loop (Section 10.9).</div>
+</div>
+
+<h3>Part C — Instruction-format bit allocation (P9–P10)</h3>
+<div class="prob"><h4>Practice P9</h4>
+<p><em>An instruction is 16 bits: 1 mode bit, 3-bit opcode, 12-bit address. (a) How many distinct memory cells can be directly addressed? (b) How many memory-reference opcodes are available?</em></p>
+<div class="step"><b>(a)</b> 2¹² = <mark>4096 cells (4K words)</mark>. <b>(b)</b> opcode values 000–110 → <mark>7 opcodes</mark> (111 is reserved for register/I-O types — Section 14).</div>
+</div>
+<div class="prob"><h4>Practice P10</h4>
+<p><em>A format has a 4-bit register field. (a) How many registers can it name? (b) If the same 16-bit instruction must fit a 4-bit opcode and two register fields, how many bits remain for addressing modes/immediate data?</em></p>
+<div class="step"><b>(a)</b> 2⁴ = <mark>16 registers</mark>. <b>(b)</b> 16 − 4 − 4 − 4 = <mark>4 bits remain</mark>. Register fields are cheap — this is the notes' purpose #2 (fewer bits) in action.</div>
+</div>
+<div class="note examnote"><span class="nt">Formula Sheet (expanded in Section 22)</span>
+T-state = 1/f &nbsp;·&nbsp; machine cycle = ΣT-states of its bus cycles &nbsp;·&nbsp; instruction time = Σ T-states × 1/f &nbsp;·&nbsp; total T-states = normal + wait states &nbsp;·&nbsp; EA(direct) = address field &nbsp;·&nbsp; EA(indirect) = M[field] &nbsp;·&nbsp; EA(register-indirect) = (R) &nbsp;·&nbsp; EA(indexed) = field + (index) &nbsp;·&nbsp; EA(relative) = displacement + (PC) &nbsp;·&nbsp; addressable cells = 2^(address bits) </div>
+</section>
+<section class="chapter" id="confusions">
+<h2>21 · Things Students Commonly Mix Up</h2>
+<p>Each pair below is a distinction exams love to test. If you can fill every row from memory, you have mastered this chapter.</p>
+<div class="twrap"><table>
+<tr><th>Pair</th><th>Left side</th><th>Right side</th><th>One-line discriminator</th></tr>
+<tr><td><strong>Machine language vs Assembly language</strong></td><td>Binary bits the CPU executes directly (<code>B8 05 00</code>)</td><td>Symbolic mnemonics for those bits (<code>MOV AX, 5</code>)</td><td>Assembly needs an assembler; machine code needs nothing</td></tr>
+<tr><td><strong>Assembly vs High-level language</strong></td><td>1 mnemonic ↔ 1 machine instruction; machine-dependent</td><td>1 statement → many instructions; portable</td><td>Abstraction level and portability</td></tr>
+<tr><td><strong>Compiler vs Assembler vs Interpreter</strong></td><td>Compiler: whole HLL program → machine code, saved once</td><td>Interpreter: HLL line-by-line each run; Assembler: assembly → binary</td><td>What is translated and when</td></tr>
+<tr><td><strong>ISA vs CPU</strong></td><td>ISA = abstract contract (instructions, registers, modes)</td><td>CPU = physical implementation of an ISA</td><td>Contract vs building</td></tr>
+<tr><td><strong>Instruction vs Program</strong></td><td>One operation (one step)</td><td>A sequence of instructions</td><td>Step vs recipe</td></tr>
+<tr><td><strong>Opcode vs Operand</strong></td><td>What to do</td><td>What/with what to do it</td><td>Verb vs nouns</td></tr>
+<tr><td><strong>Address vs Data</strong></td><td>The mailbox number</td><td>The letter inside the mailbox</td><td>Location vs contents</td></tr>
+<tr><td><strong>Register vs Memory</strong></td><td>Few, inside CPU, fastest, named in a few bits</td><td>Huge, outside CPU, slower, addressed in many bits</td><td>Hands vs warehouse</td></tr>
+<tr><td><strong>Direct vs Indirect addressing</strong></td><td>Field is the data's address; 1 memory read</td><td>Field points to the address of the address; 2 reads</td><td>Number of pointer hops through memory</td></tr>
+<tr><td><strong>Immediate vs Direct</strong></td><td>The field <em>is</em> the value (<code>#55H</code>)</td><td>The field is where the value lives (<code>55H</code>)</td><td>Value vs location</td></tr>
+<tr><td><strong>Register vs Register-indirect</strong></td><td>Register <em>holds</em> the operand</td><td>Register holds the operand's <em>address</em></td><td>Data in R vs address in R</td></tr>
+<tr><td><strong>Instruction cycle vs Machine cycle</strong></td><td>Fetch+execute one instruction (big picture)</td><td>One fetch/read/write operation (fine grain)</td><td>Instruction cycle = several machine cycles</td></tr>
+<tr><td><strong>Machine cycle vs Bus cycle</strong></td><td>Logical operation (may need 2+ transfers)</td><td>One physical bus transaction</td><td>8085 16-bit transfer = 1 machine cycle, 2 bus cycles</td></tr>
+<tr><td><strong>T-state vs Clock cycle</strong></td><td>Same thing — one clock period = 1/f</td><td>—</td><td>Two names, one unit</td></tr>
+<tr><td><strong>Instruction type vs format</strong></td><td>Type = purpose (register/memory/I-O)</td><td>Format = bit layout (fields, length)</td><td>What it does vs how it's encoded</td></tr>
+<tr><td><strong>Zero-address vs One-address</strong></td><td>Operands implied on stack top</td><td>One implied operand = accumulator</td><td>Stack vs accumulator organisation</td></tr>
+<tr><td><strong>Fixed vs Variable length</strong></td><td>All instructions same size; easy decode; padding waste</td><td>Size fits content; compact; hard decode</td><td>Decode simplicity vs code compactness</td></tr>
+<tr><td><strong>RISC vs CISC</strong></td><td>Few simple instructions, usually fixed length, register-register ALU</td><td>Many complex instructions, variable length, memory-ops possible</td><td>Trade-off: decode simplicity vs code size</td></tr>
+</table></div>
+</section>
+
+<section class="chapter" id="exam">
+<h2>22 · Exam-Oriented Revision</h2>
+
+<h3>22.1 Important Definitions (memorise)</h3>
+<div class="twrap"><table>
+<tr><th>Term</th><th>Exam-ready definition</th></tr>
+<tr><td>Instruction</td><td>An order given to a computer processor by a program to compute a task.</td></tr>
+<tr><td>Instruction set</td><td>The collection of all commands a processor can execute — its opcodes, addressing modes, data types, registers, memory model, interrupt/exception handling, external I/O.</td></tr>
+<tr><td>ISA</td><td>The abstract model of a computer serving as the interface between software and hardware; permits multiple implementations differing in performance, size and cost while retaining binary compatibility.</td></tr>
+<tr><td>Addressing mode</td><td>A rule for interpreting or modifying the address field of an instruction before the operand is referenced.</td></tr>
+<tr><td>Effective address</td><td>The address of the exact memory location where the operand's value actually resides, computed per the addressing mode.</td></tr>
+<tr><td>T-state</td><td>One clock period; the smallest unit of CPU timing (= 1/frequency).</td></tr>
+<tr><td>Bus cycle</td><td>Time for one read/write transaction between CPU and an external device.</td></tr>
+<tr><td>Machine cycle</td><td>Time for one fetch, read, or write operation; may span multiple bus cycles if data is wider than the bus.</td></tr>
+<tr><td>Instruction cycle</td><td>Time to fetch and execute one complete instruction.</td></tr>
+<tr><td>Opcode</td><td>The field of an instruction specifying the operation to be performed.</td></tr>
+<tr><td>Condition codes (flags)</td><td>Status bits (Z, S, O, C) describing the result of the last arithmetic/logical operation; used for program-flow control.</td></tr>
+<tr><td>RISC / CISC</td><td>Reduced vs Complex Instruction Set Computer — few/simple vs many/complex instructions; trade-off between decode simplicity and code size.</td></tr>
+</table></div>
+
+<h3>22.2 Important Differences (comparison table)</h3>
+<div class="twrap"><table>
+<tr><th>Dimension</th><th>Fixed-length format</th><th>Variable-length format</th></tr>
+<tr><td>Instruction size</td><td>Same for every opcode</td><td>Only as big as needed (e.g. 2–8 bytes on M6800)</td></tr>
+<tr><td>Decoding</td><td>Simple, fast</td><td>Complex — length discovered per instruction</td></tr>
+<tr><td>Memory efficiency</td><td>Wasteful (padding)</td><td>Compact</td></tr>
+<tr><td>Typical association</td><td>RISC (MIPS)</td><td>CISC (M6800, x86)</td></tr>
+</table></div>
+<div class="twrap"><table>
+<tr><th>Dimension</th><th>Register-reference</th><th>Memory-reference</th></tr>
+<tr><td>Encoding</td><td>opcode=111, I=0</td><td>opcode=000–110, I selects direct/indirect</td></tr>
+<tr><td>Operand location</td><td>Registers (e.g. AC)</td><td>Main memory</td></tr>
+<tr><td>Speed</td><td>Fastest</td><td>Slower (memory access)</td></tr>
+<tr><td>Examples</td><td>CMA, RLC, MOV AX,BX, INC AX</td><td>LDA, STA, MOV AX,[1000H]</td></tr>
+</table></div>
+
+<h3>22.3 Important Diagrams (be able to draw)</h3>
+<ol>
+<li><strong>Language hierarchy pyramid</strong> — HLL → assembly → machine code (Section 3).</li>
+<li><strong>Bus structure</strong> — CPU ↔ memory with address/control/data buses and PC/IR labelled (Fig 7.1).</li>
+<li><strong>Fetch-decode-execute flow</strong> — PC → address bus → memory → data bus → IR → decode → execute (Section 7.2).</li>
+<li><strong>Instruction-cycle state diagram</strong> — the 7 states with loop-back (Section 11.1).</li>
+<li><strong>16-bit instruction format</strong> — I | opcode | address, with the 3-type decision tree (Fig 14.1).</li>
+<li><strong>Direct vs register-indirect vs indirect</strong> — pointer-chain sketches (Section 10).</li>
+<li><strong>Stack evolution</strong> — PUSH/POP/ADD/MUL states for X=(A+B)(C+D) (Section 19.2A).</li>
+<li><strong>MIPS R-type format</strong> — six fields, 32 bits (Section 18.1).</li>
+</ol>
+
+<h3>22.4 Important Formulas</h3>
+<div class="formula-box"><span class="fm">T-state = 1 / clock frequency</span></div>
+<div class="formula-box"><span class="fm">Instruction time = total T-states × T-state time</span></div>
+<div class="formula-box"><span class="fm">Total T-states = normal T-states + wait states</span></div>
+<div class="formula-box"><span class="fm">Addressable memory cells = 2<sup>address bits</sup>; registers selectable = 2<sup>register-field bits</sup></span></div>
+<div class="formula-box"><span class="fm">EA(direct) = address field · EA(indirect) = M[field] · EA(reg-indirect) = (R) · EA(indexed) = field + (index) · EA(relative) = displacement + (PC)</span></div>
+<div class="formula-box"><span class="fm">Units: 1 kHz=10³ Hz · 1 MHz=10⁶ Hz · 1 GHz=10⁹ Hz · 1 ms=10⁻³ s · 1 µs=10⁻⁶ s · 1 ns=10⁻⁹ s</span></div>
+
+<h3>22.5 Important Instruction Formats (compact revision)</h3>
+<div class="twrap"><table>
+<tr><th>Format</th><th>Layout</th><th>Example</th></tr>
+<tr><td>16-bit teaching model</td><td>I(15) | Opcode(14–12) | Address(11–0)</td><td>register-ref <code>0 111 …</code>, I/O <code>1 111 …</code>, memory-ref <code>I 000–110 addr</code></td></tr>
+<tr><td>Zero-address</td><td>Opcode</td><td><code>ADD</code></td></tr>
+<tr><td>One-address</td><td>Opcode | Address</td><td><code>ADD A</code></td></tr>
+<tr><td>Two-address</td><td>Opcode | Dest/Src | Src</td><td><code>ADD R1, R2</code></td></tr>
+<tr><td>Three-address</td><td>Opcode | Src1 | Src2 | Dest</td><td><code>ADD R1, R2, R3</code></td></tr>
+<tr><td>MIPS R-type (fixed 32-bit)</td><td>op(6)|rs(5)|rt(5)|rd(5)|shamt(5)|funct(6)</td><td>register ALU ops</td></tr>
+<tr><td>Assembly generic</td><td>[Label:] Mnemonic [Operand, Operand] [;comment]</td><td><code>LOOP: MOV AX, 10 ; init</code></td></tr>
+</table></div>
+
+<h3>22.6 Likely Exam Questions</h3>
+<h4>1-mark</h4>
+<ol>
+<li>Define T-state. / Define effective address. / What is an opcode?</li>
+<li>Which register holds the current instruction? (IR)</li>
+<li>In the 16-bit format, what do bits 14–12 = 111 with bit 15 = 1 indicate? (I/O instruction)</li>
+<li>Name the four condition codes. (Z, S, O, C)</li>
+</ol>
+<h4>2-mark</h4>
+<ol>
+<li>Distinguish bus cycle from machine cycle with the 8085 16-bit example.</li>
+<li>Why is register-indirect addressing cheaper in bits than direct addressing?</li>
+<li>Give one advantage and one disadvantage of fixed-length formats.</li>
+<li>What do CLC and STC do, and why would a program use them?</li>
+</ol>
+<h4>5-mark</h4>
+<ol>
+<li>Explain any five addressing modes with one example each, giving the EA in every case.</li>
+<li>Describe the stages of the instruction cycle (7-state version) and say which states may be null.</li>
+<li>Compare zero-, one-, two- and three-address instructions using X = (A+B)(C+D).</li>
+<li>Compare compiler, assembler and interpreter.</li>
+</ol>
+<h4>10-mark</h4>
+<ol>
+<li>Draw the 16-bit instruction format and the classification decision tree; explain all three instruction types with examples and advantages/disadvantages.</li>
+<li>Explain the complete journey of an instruction from memory to execution, naming every register and bus involved (PC, IR, address/control/data buses, decoder, ALU).</li>
+<li>RISC vs CISC: philosophy, instruction format, examples, and the code-size vs decode-simplicity trade-off.</li>
+</ol>
+<h4>Numerical</h4>
+<ol>
+<li>4 T-states per machine cycle at 2 MHz: time per machine cycle? (2 µs)</li>
+<li>16 T-states in 8 µs: clock frequency? (2 MHz)</li>
+<li>3 T-state read + 2 wait states at 1 µs clock: total time? (5 µs)</li>
+<li>R0=40H, M[40H]=25H: register-indirect load → operand? (25H)</li>
+</ol>
+<h4>Compare-and-contrast / diagram-based</h4>
+<ol>
+<li>Direct vs indirect addressing — with memory diagrams.</li>
+<li>Draw the light-bulb machine-language table and explain what it teaches about machine code.</li>
+<li>Sketch the fetch-decode-execute cycle for <code>LDA 2000H</code> showing PC, IR and AC values at each stage.</li>
+</ol>
+</section>
+
+<section class="chapter" id="references">
+<h2>23 · References &amp; Further Reading</h2>
+<h3>From the lecture document</h3>
+<h4>Textbooks</h4>
+<ul>
+<li>Carl Hamacher, Zvonko Vranesic, Safwat Zaky, Naraig Manjikian — <em>Computer Organization and Embedded Systems</em>, 6th ed., McGraw-Hill, 2012.</li>
+<li>M. Morris Mano — <em>Computer System Architecture</em>, 3rd ed., Pearson, 2023. (Source of the 16-bit instruction model and register/memory/I-O classification.)</li>
+</ul>
+<h4>Reference books</h4>
+<ul>
+<li>John P. Hayes — <em>Computer Architecture and Organization</em>, 3rd ed., McGraw-Hill, 1998.</li>
+<li>William Stallings — <em>Computer Organization and Architecture: Designing for Performance</em>, 11th ed., Pearson, 2021.</li>
+<li>Vincent P. Heuring, Harry F. Jordan — <em>Computer Systems Design and Architecture</em>, 2nd ed., Pearson, 2003.</li>
+</ul>
+<h4>Websites named in the document</h4>
+<ul>
+<li>Levels of programming languages — thebittheories.com/levels-of-programming-languages-b6a38a68c0f2</li>
+<li>University of Toronto lecture notes (CSC324) — cs.toronto.edu/~gpenn/csc324/lecture2.pdf</li>
+<li>Programming languages — britannica.com/technology/computer-programming-language</li>
+<li>Addressing modes &amp; instruction cycle — studytonight.com/computer-architecture/addressingmodes-instructioncycle</li>
+<li>Addressing modes (PDF) — eie.polyu.edu.hk/~enyhchan/addrmode.pdf</li>
+<li>Instruction formats (zero/one/two/three address) — <a href="https://www.geeksforgeeks.org/computer-organization-instruction-formats-zero-one-two-three-address-instruction" target="_blank" rel="noopener">GeeksforGeeks</a></li>
+</ul>
+<h3>External sources consulted for clarifications</h3>
+<ul>
+<li><a href="https://en.wikipedia.org/wiki/Instruction_set_architecture" target="_blank" rel="noopener">Instruction set architecture — Wikipedia</a> (ISA vs implementation, binary compatibility).</li>
+<li><a href="https://en.wikipedia.org/wiki/Addressing_mode" target="_blank" rel="noopener">Addressing mode — Wikipedia</a> (mode taxonomy and EA formulas).</li>
+<li><a href="https://en.wikipedia.org/wiki/X86" target="_blank" rel="noopener">x86 — Wikipedia</a> (encoder examples: B8/05 opcodes, variable-length instructions, NOP = 0x90).</li>
+<li>M. Morris Mano, <em>Computer System Architecture</em>, 3rd ed. — register-reference instruction opcodes (CLA 7800H, CMA 7200H …) and the fetch/decode decode rule used in Section 14.</li>
+</ul>
+<h3>Where this chapter's lectures lead next (course map)</h3>
+<p class="small">Per the course LMS listing embedded in the document: Lecture 2.1.1 (CPU organisation — accumulator based, general register), 2.1.2 (stack organisation, RISC & CISC architecture), 2.2.x (control unit design), 2.3.x (memory organisation), 3.1.x (I/O: interrupts, DMA, I/O processors), 3.2.x (parallel processing). The I/O transfer modes flagged "discussed in a later unit" resolve in Lectures 3.1.3–3.1.5.</p>
+</section>
+</main>
+</div><!-- /layout -->
+
+<footer class="site">
+<p>Computer Organization &amp; Architecture — Chapter 1.3 complete guide. Content derived from the course lecture document (Lectures 1.3.1–1.3.4, CONT_25CST-201) with clarifications and externally sourced expansions as labelled. Single self-contained HTML file — no external libraries required.</p>
+</footer>
+
+<script>
+(function(){
+  var bar=document.getElementById('progress');
+  var links=Array.prototype.slice.call(document.querySelectorAll('#sidebar a[href^="#"]'));
+  var map={};
+  links.forEach(function(a){
+    var id=a.getAttribute('href').slice(1);
+    var el=document.getElementById(id);
+    if(el) map[id]=a;
+  });
+  var sections=Object.keys(map).map(function(id){return document.getElementById(id);});
+  function onScroll(){
+    var h=document.documentElement;
+    var max=h.scrollHeight-h.clientHeight;
+    bar.style.width=(max>0?(h.scrollTop/max)*100:0)+'%';
+    var current=null;
+    for(var i=0;i<sections.length;i++){
+      if(sections[i] && sections[i].getBoundingClientRect().top<=90) current=sections[i].id;
+    }
+    links.forEach(function(a){a.classList.remove('active');});
+    if(current && map[current]) map[current].classList.add('active');
+  }
+  window.addEventListener('scroll',onScroll,{passive:true});
+  onScroll();
+  var btn=document.getElementById('menuBtn');
+  document.querySelectorAll('#sidebar a').forEach(function(a){
+    a.addEventListener('click',function(){document.getElementById('sidebar').classList.remove('open');});
+  });
+})();
+</script>
+</body>
+</html>
